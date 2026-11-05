@@ -53,6 +53,24 @@ pre{margin:0;font-family:var(--f-mono);font-size:13px;line-height:1.7;background
 .note{font-size:13px;color:var(--muted)}
 .src{font-size:13px;color:var(--muted)}
 .src a{color:var(--guide)}
+.editor-controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px 16px}
+.editor-controls label{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:6px 8px;min-width:0}
+.editor-controls input[type=range]{grid-column:1/3;width:100%;min-width:0}
+.editor-controls output{grid-column:3;grid-row:2}
+.info-btn{width:24px;height:24px;padding:0;border-radius:50%;font-family:var(--f-mono);font-weight:600;color:var(--guide);border-color:var(--guide)}
+.eye-options{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.gallery-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.fish-preview{width:100%;height:auto;border-radius:8px;background:var(--water)}
+#editor .tank{cursor:default;touch-action:auto}
+dialog{width:min(440px,calc(100% - 40px));border:1px solid var(--line);border-radius:12px;padding:20px;background:var(--paper);color:var(--ink);font:inherit;box-shadow:0 18px 60px #15302e33}
+dialog::backdrop{background:#15302e66}
+dialog h2{font-family:var(--f-display);font-weight:400;margin:0 0 10px}
+dialog p{margin:0 0 16px}
+.dialog-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}
+.save-fields{display:grid;gap:10px}.save-fields label{display:grid;gap:4px;color:var(--muted)}
+.save-fields input{font:inherit;padding:7px 9px;border:1px solid var(--line);border-radius:7px;background:var(--bg);color:var(--ink)}
+@media(max-width:700px){.editor-controls{grid-template-columns:repeat(2,minmax(0,1fr))}.gallery-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:460px){.gallery-grid{grid-template-columns:1fr}}
 </style>
 
 </head>
@@ -67,22 +85,25 @@ pre{margin:0;font-family:var(--f-mono);font-size:13px;line-height:1.7;background
   <section class="card" id="editor" hidden>
     <h2>나만의 붕어 만들기</h2>
     <div class="tank"><canvas id="editCv" width="1080" height="560" aria-label="만드는 중인 붕어 미리보기"></canvas></div>
-    <div class="bar">
-      <label>주둥이 길이 <input data-part="snout" type="range" min="0" max="0.8" step="0.05" value="0.35"><output>0.35</output></label>
-      <label>주둥이 뭉툭함 <input data-part="mouth" type="range" min="0.35" max="0.8" step="0.05" value="0.54"><output>0.54</output></label>
-      <label>몸통 길이 <input data-part="length" type="range" min="1.5" max="2.8" step="0.05" value="2.2"><output>2.20</output></label>
-      <label>몸통 통통함 <input data-part="body" type="range" min="0.6" max="1.25" step="0.05" value="0.9"><output>0.90</output></label>
-      <label>꼬리 크기 <input data-part="tail" type="range" min="0.45" max="1.2" step="0.05" value="0.8"><output>0.80</output></label>
-      <label>꼬리 주름 수 <input data-part="folds" type="range" min="0" max="8" step="1" value="3"><output>3</output></label>
-      <label>눈 x <input data-part="eyeX" type="range" min="0.2" max="1.2" step="0.05" value="0.65"><output>0.65</output></label>
-      <label>눈 y <input data-part="eyeY" type="range" min="-0.45" max="0.55" step="0.05" value="0.3"><output>0.30</output></label>
-      <label>눈 모양 <select id="eyeStyle"><option value="circle">별모양</option><option value="square">네모</option><option value="angry">화난모양</option><option value="line">ㅡ 모양</option></select></label>
+    <div class="editor-controls">
+      <label>주둥이 길이 <button type="button" class="info-btn" data-info="snout" aria-label="주둥이 길이 함수 설명">i</button><input data-part="snout" type="range" min="0" max="0.8" step="0.05" value="0.35"><output>0.35</output></label>
+      <label>주둥이 뭉툭함 <button type="button" class="info-btn" data-info="mouth" aria-label="주둥이 함수 설명">i</button><input data-part="mouth" type="range" min="0.35" max="0.8" step="0.05" value="0.54"><output>0.54</output></label>
+      <label>몸통 길이 <button type="button" class="info-btn" data-info="length" aria-label="몸통 길이 함수 설명">i</button><input data-part="length" type="range" min="1.5" max="2.8" step="0.05" value="2.2"><output>2.20</output></label>
+      <label>몸통 통통함 <button type="button" class="info-btn" data-info="body" aria-label="몸통 함수 설명">i</button><input data-part="body" type="range" min="0.6" max="1.25" step="0.05" value="0.9"><output>0.90</output></label>
+      <label>꼬리 크기 <button type="button" class="info-btn" data-info="tail" aria-label="꼬리 함수 설명">i</button><input data-part="tail" type="range" min="0.45" max="1.2" step="0.05" value="0.8"><output>0.80</output></label>
+      <label>꼬리 주름 수 <button type="button" class="info-btn" data-info="folds" aria-label="꼬리 주름 함수 설명">i</button><input data-part="folds" type="range" min="0" max="8" step="1" value="3"><output>3</output></label>
+      <label>눈 x <button type="button" class="info-btn" data-info="eyeX" aria-label="눈 x 좌표 설명">i</button><input data-part="eyeX" type="range" min="0.2" max="1.2" step="0.05" value="0.65"><output>0.65</output></label>
+      <label>눈 y <button type="button" class="info-btn" data-info="eyeY" aria-label="눈 y 좌표 설명">i</button><input data-part="eyeY" type="range" min="-0.45" max="0.55" step="0.05" value="0.3"><output>0.30</output></label>
+      <div class="eye-options"><span>눈 모양</span><button type="button" data-eye="circle" aria-pressed="true">별모양</button><button type="button" data-eye="square" aria-pressed="false">네모</button><button type="button" data-eye="angry" aria-pressed="false">화난모양</button><button type="button" data-eye="line" aria-pressed="false">ㅡ 모양</button></div>
     </div>
+    <pre id="controlInfo" hidden></pre>
     <pre id="fishFormula"></pre>
     <p class="note">몸통의 이차함수 끝점은 주둥이와 꼬리의 시작점에 맞춰 다시 계산합니다. 비늘과 아가미는 몸통 경계 안쪽에만 배치됩니다.</p>
     <div class="bar"><button id="saveFish">저장하기</button><button id="editorBack">수조로 돌아가기</button></div>
   </section>
-  <section class="card" id="gallery" hidden><h2>다른 사람의 붕어</h2><div class="cards" id="fishCards"></div><p class="note">이 HTML만으로 배포한 GitHub Pages는 방문자 간 공용 데이터베이스에 쓸 수 없습니다. 현재 저장한 붕어는 이 브라우저에 보관됩니다.</p><button id="galleryBack">수조로 돌아가기</button></section>
+  <section class="card" id="gallery" hidden><h2>다른 사람의 붕어</h2><div class="gallery-grid" id="fishCards"></div><p class="note">이 HTML만으로 배포한 GitHub Pages는 방문자 간 공용 데이터베이스에 쓸 수 없습니다. 현재 저장한 붕어는 이 브라우저에 보관됩니다.</p><button id="galleryBack">수조로 돌아가기</button></section>
+  <dialog id="unsavedDialog"><h2>저장되지 않았습니다.</h2><p>수조로 돌아가기 전에 물고기를 저장하시겠어요?</p><div class="dialog-actions"><button id="unsavedYes">네</button><button id="unsavedNo">아니오</button></div></dialog>
+  <dialog id="saveDialog"><form id="saveForm"><h2>붕어 저장하기</h2><div class="save-fields"><label>내 붕어의 이름은?<input name="fishName" maxlength="32" required></label><label>붕어 주인은 누구?<input name="ownerName" maxlength="32" required></label></div><div class="dialog-actions"><button type="button" id="saveCancel">취소</button><button type="submit">저장</button></div></form></dialog>
 
   <div class="tank" id="tank">
     <canvas id="cv" width="1080" height="560" aria-label="금붕어가 빨간 별을 따라 헤엄치는 수조"></canvas>
@@ -159,23 +180,25 @@ let xt=rng(-1.9,-1.2,.05);add(xt,xt.map(x=>1.17-.8*(x+2.1)**2));add(xt,xt.map(x=
 let xs3=[-1.5,-1.4,-1.3];add(xs3,xs3.map(x=>x+1.1));add(xs3,xs3.map(x=>-x-1.1));add(xs3,xs3.map(()=>0));
 let yc1=rng(0,1.092,.05);add(yc1.map(y=>-1.9-.4*(.546**2-(y-.546)**2)),yc1);
 let yc2=rng(-1.092,0,.052);add(yc2.map(y=>-1.9-.4*(.546**2-(y+.546)**2)),yc2);
+const originalP=P.map(p=>p.map(q=>q.slice()));
 
 const defaultFish={snout:0,mouth:.54,length:2.2,body:.9,tail:.8,folds:3,eyeX:1,eyeY:.03,eyeStyle:'circle'};
-let design={...defaultFish},adopted=null;
-function makeGeometry(f){
-  P.length=0;const back=-f.length,front=1.2,half=f.mouth;
-  const xs=rng(back,front,.04),mid=(front+back)/2,radius=(front-back)/2;
-  const top=xs.map(x=>half+(f.body-half)*Math.max(0,1-((x-mid)/radius)**2));
-  add(xs,top);add(xs,top.map(y=>-y));
-  const ys=rng(-half,half,.025);add(ys.map(y=>front+f.snout*(1-(y/half)**2)),ys);
-  const tailRoot=back,tailEnd=back-f.tail*1.2;
-  add(rng(0,1,.03).map(t=>tailRoot+(tailEnd-tailRoot)*t),rng(0,1,.03).map(t=>half*(1-t)+.05*Math.sin(t*Math.PI)));
-  add(rng(0,1,.03).map(t=>tailRoot+(tailEnd-tailRoot)*t),rng(0,1,.03).map(t=>-half*(1-t)-.05*Math.sin(t*Math.PI)));
-  for(let i=1;i<=f.folds;i++){const q=i/(f.folds+1),y=half*(q*2-1);add([back-f.tail*.08,back-f.tail*(.2+q*.65),tailEnd],[y, y*.55,0])}
-  // Inside-only scale arcs; the quadratic body boundary is sampled at each x.
-  for(let row=-2;row<=2;row++){const yy=row*f.body*.22;for(let col=0;col<5;col++){const x=-1.35+col*.48;const bound=half+(f.body-half)*(1-((x-front)**2/den));if(Math.abs(yy)<bound-.12)add([x-.12,x,x+.12],[yy,yy+.1,yy])}}
-  const gs=rng(-.35,.35,.035);add(gs.map(y=>-.05+.35*(1-(y/.35)**2)),gs);
+let design={...defaultFish},adopted=null,editorSaved=false;
+function fishPaths(f){
+  const paths=[],put=(xs,ys)=>paths.push(xs.map((x,i)=>[x,ys[i]]).filter(p=>Number.isFinite(p[1])));
+  const back=-f.length,front=1.2,half=f.mouth,mid=(front+back)/2,radius=(front-back)/2,den=radius*radius;
+  const xs=rng(back,front,.04),top=xs.map(x=>half+(f.body-half)*Math.max(0,1-((x-mid)/radius)**2));
+  put(xs,top);put(xs,top.map(y=>-y));
+  const ys=rng(-half,half,.025);put(ys.map(y=>front+f.snout*(1-(y/half)**2)),ys);
+  const tailEnd=back-f.tail*1.2;
+  put(rng(0,1,.03).map(t=>back+(tailEnd-back)*t),rng(0,1,.03).map(t=>half*(1-t)+.05*Math.sin(t*Math.PI)));
+  put(rng(0,1,.03).map(t=>back+(tailEnd-back)*t),rng(0,1,.03).map(t=>-half*(1-t)-.05*Math.sin(t*Math.PI)));
+  for(let i=1;i<=f.folds;i++){const q=i/(f.folds+1),y=half*(q*2-1);put([back-f.tail*.08,back-f.tail*(.2+q*.65),tailEnd],[y,y*.55,0])}
+  for(let row=-2;row<=2;row++){const yy=row*f.body*.22;for(let col=0;col<5;col++){const x=-1.35+col*.48,bound=half+(f.body-half)*(1-((x-mid)**2/den));if(Math.abs(yy)<bound-.12)put([x-.12,x,x+.12],[yy,yy+.1,yy])}}
+  const gs=rng(-.35,.35,.035);put(gs.map(y=>-.05+.35*(1-(y/.35)**2)),gs);
+  return paths;
 }
+function makeGeometry(f){P.splice(0,P.length,...fishPaths(f))}
 
 const BUB=[
  {x:[-8,-4,0,5,9],a:.5,f:'sin',d:8,dy:8,ph:[10,40,70,25,85],s:11},
@@ -251,17 +274,44 @@ function drawEye(c,x,y,r,style){c.save();c.strokeStyle=C.fish;c.fillStyle=C.fish
 
 const editor=document.getElementById('editor'),gallery=document.getElementById('gallery'),tankEl=document.getElementById('tank'),bar=document.querySelector('.wrap>.bar'),liveEl=document.getElementById('live'),cardsEl=document.querySelector('.wrap>.cards'),srcEl=document.querySelector('.src');
 const homeEls=[tankEl,bar,liveEl,cardsEl,srcEl];
-function show(which){homeEls.forEach(x=>x.hidden=which!=='home');editor.hidden=which!=='editor';gallery.hidden=which!=='gallery'}
-function renderEditor(){makeGeometry(design);document.querySelectorAll('#editor input[type=range]').forEach(i=>{const v=design[i.dataset.part];i.value=v;i.nextElementSibling.value=Number(v).toFixed(2)});document.getElementById('eyeStyle').value=design.eyeStyle;
- const c=document.getElementById('editCv'),g=c.getContext('2d'),w=c.width,h=c.height;g.clearRect(0,0,w,h);g.fillStyle=C.water;g.fillRect(0,0,w,h);g.save();g.translate(w*.52,h*.52);g.scale(85,-85);g.strokeStyle=C.fish;g.lineWidth=.045;g.lineJoin='round';g.lineCap='round';for(const p of P){g.beginPath();p.forEach(([x,y],i)=>i?g.lineTo(x,y):g.moveTo(x,y));g.stroke()}drawEye(g,design.eyeX,design.eyeY,.11,design.eyeStyle);g.restore();
+function show(which){homeEls.forEach(x=>x.hidden=which!=='home');editor.hidden=which!=='editor';gallery.hidden=which!=='gallery';document.querySelector('.head-actions').hidden=which!=='home'}
+function renderEditor(){makeGeometry(design);document.querySelectorAll('#editor input[type=range]').forEach(i=>{const v=design[i.dataset.part];i.value=v;i.nextElementSibling.value=Number(v).toFixed(2)});document.querySelectorAll('[data-eye]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.eye===design.eyeStyle));
+ const c=document.getElementById('editCv'),g=c.getContext('2d'),w=c.width,h=c.height,unit=w/54,px=x=>(x+27)*unit,py=y=>(17.6-y)*unit;
+ c.style.height=`${unit*27.6}px`;g.clearRect(0,0,w,h);const bg=g.createLinearGradient(0,0,0,h);bg.addColorStop(0,C.water);bg.addColorStop(1,C['water-deep']);g.fillStyle=bg;g.fillRect(0,0,w,h);
+ g.save();g.strokeStyle=C.guide;g.globalAlpha=.35;g.lineWidth=1;for(let x=-25;x<=25;x+=5){g.beginPath();g.moveTo(px(x),py(17.6));g.lineTo(px(x),py(-10));g.stroke()}for(let y=-10;y<=15;y+=5){g.beginPath();g.moveTo(px(-27),py(y));g.lineTo(px(27),py(y));g.stroke()}g.globalAlpha=.8;g.lineWidth=1.5;g.beginPath();g.moveTo(px(0),py(17.6));g.lineTo(px(0),py(-10));g.moveTo(px(-27),py(0));g.lineTo(px(27),py(0));g.stroke();g.fillStyle=C.ink;g.font='13px "JetBrains Mono",monospace';g.textAlign='center';for(let x=-25;x<=25;x+=5)g.fillText(String(x),px(x),py(-9.1));g.textAlign='left';for(let y=-10;y<=15;y+=5)g.fillText(String(y),px(-26.5),py(y)-3);g.restore();
+ g.save();g.strokeStyle=C.fish;g.lineWidth=Math.max(2,.09*S*unit);g.lineJoin='round';g.lineCap='round';for(const p of P){g.beginPath();p.forEach(([x,y],i)=>i?g.lineTo(px(x*S),py(y*S)):g.moveTo(px(x*S),py(y*S)));g.stroke()}drawEye(g,px(design.eyeX*S),py(design.eyeY*S),Math.max(3,.1*S*unit),design.eyeStyle);g.restore();
  const back=-design.length,mid=(1.2+back)/2,radius=(1.2-back)/2;
  document.getElementById('fishFormula').textContent=`몸통: y = ±[${design.mouth} + (${design.body}-${design.mouth})(1-((x-${mid.toFixed(2)})/${radius.toFixed(2)})²)]\n주둥이: x = 1.2 + ${design.snout}(1-(y/${design.mouth})²)\n꼬리 폭 계수: ${design.tail}; 꼬리 주름: ${design.folds}개\n눈 중심: (${design.eyeX}, ${design.eyeY})`;
+ if(activeInfo)showInfo(activeInfo);
 }
-document.getElementById('makeFish').onclick=()=>{design={...(adopted||design)};show('editor');renderEditor()};
-document.getElementById('editorBack').onclick=()=>show('home');document.getElementById('galleryBack').onclick=()=>show('home');
-document.querySelectorAll('#editor input[type=range]').forEach(i=>i.oninput=()=>{design[i.dataset.part]=+i.value;renderEditor()});document.getElementById('eyeStyle').onchange=e=>{design.eyeStyle=e.target.value;renderEditor()};
+function restoreApplied(){if(adopted)makeGeometry(adopted);else P.splice(0,P.length,...originalP.map(p=>p.map(q=>q.slice())))}
+function leaveEditor(){if(!editorSaved){document.getElementById('unsavedDialog').showModal();return}restoreApplied();show('home')}
+document.getElementById('makeFish').onclick=()=>{design={...(adopted||defaultFish)};editorSaved=false;show('editor');renderEditor()};
+document.getElementById('editorBack').onclick=leaveEditor;document.getElementById('galleryBack').onclick=()=>show('home');
+document.querySelectorAll('#editor input[type=range]').forEach(i=>i.oninput=()=>{design[i.dataset.part]=+i.value;editorSaved=false;renderEditor()});document.querySelectorAll('[data-eye]').forEach(b=>b.onclick=()=>{design.eyeStyle=b.dataset.eye;editorSaved=false;renderEditor()});
+let activeInfo='';
+const infoText={
+ snout:()=>`주둥이 이차함수\nx = 1.2 + ${design.snout}(1 − (y/${design.mouth})²)\n바뀌는 계수: 주둥이 길이 ${design.snout} (범위 0~0.8)\n물고기 전체 좌표 범위: x [−27, 27], y [−10, 17.6]`,
+ mouth:()=>`주둥이 끝 높이와 몸통 연결 계수\nx = 1.2 + ${design.snout}(1 − (y/${design.mouth})²),  y 범위 [−${design.mouth}, ${design.mouth}]\n바뀌는 계수: 반높이 ${design.mouth} (범위 0.35~0.8)\n몸통 포물선 끝점도 같은 높이에 맞춰 연결`,
+ length:()=>`몸통 이차함수의 길이 계수\n중심 m = ${( (1.2-design.length)/2 ).toFixed(2)}, 반폭 h = ${((1.2+design.length)/2).toFixed(2)}\ny = ±[${design.mouth} + (${design.body}−${design.mouth})(1−((x−m)/h)²)]\n몸통 x 범위 [−${design.length}, 1.2] (슬라이더 1.5~2.8)`,
+ body:()=>`몸통 이차함수\ny = ±[${design.mouth} + (${design.body}−${design.mouth})(1−((x−${((1.2-design.length)/2).toFixed(2)})/${((1.2+design.length)/2).toFixed(2)})²)]\n바뀌는 꼭짓점 높이 계수: ${design.body} (범위 0.6~1.25)\n몸통 좌표 범위 y [−${design.body}, ${design.body}]`,
+ tail:()=>`꼬리 곡선의 폭 계수\nx 시작 = −${design.length}, 끝 x = −${(design.length+1.2*design.tail).toFixed(2)}\n바뀌는 계수: 꼬리 크기 ${design.tail} (범위 0.45~1.2)\n몸통과 꼬리는 x = −${design.length}에서 연결`,
+ folds:()=>`꼬리 내부 주름 수 n = ${design.folds}\n주름은 꼬리 뿌리에서 끝으로 매개변수 t = i/(n+1) 위치에 배치됩니다.\n렌더링 범위: 꼬리 x [−${(design.length+1.2*design.tail).toFixed(2)}, −${design.length}]`,
+ eyeX:()=>`눈 중심의 x좌표 = ${design.eyeX}\n허용 범위 [0.2, 1.2], 눈은 몸통 좌표계에서 회전변환됩니다.\n전체 수조 표시 범위 x [−27, 27]`,
+ eyeY:()=>`눈 중심의 y좌표 = ${design.eyeY}\n허용 범위 [−0.45, 0.55], 눈은 몸통 좌표계에서 회전변환됩니다.\n전체 수조 표시 범위 y [−10, 17.6]`
+};
+function showInfo(key){activeInfo=key;const box=document.getElementById('controlInfo');box.hidden=false;box.textContent=infoText[key]()}
+document.querySelectorAll('[data-info]').forEach(b=>b.onclick=()=>showInfo(b.dataset.info));
+document.getElementById('saveFish').onclick=()=>document.getElementById('saveDialog').showModal();
+document.getElementById('saveCancel').onclick=()=>document.getElementById('saveDialog').close();
+document.getElementById('saveForm').onsubmit=e=>{e.preventDefault();const form=e.currentTarget,name=form.elements.fishName.value.trim(),owner=form.elements.ownerName.value.trim();if(!name||!owner)return;const all=savedFish();const saved={...design,name,owner};all.push(saved);localStorage.setItem(storageKey,JSON.stringify(all));adopted=saved;design={...saved};makeGeometry(design);editorSaved=true;document.getElementById('saveDialog').close();show('home')};
+document.getElementById('unsavedYes').onclick=()=>{document.getElementById('unsavedDialog').close();document.getElementById('saveDialog').showModal()};
+document.getElementById('unsavedNo').onclick=()=>{document.getElementById('unsavedDialog').close();restoreApplied();show('home')};
+document.getElementById('unsavedDialog').addEventListener('cancel',e=>e.preventDefault());
 const storageKey='ttabung-fish-v1';function savedFish(){try{return JSON.parse(localStorage.getItem(storageKey)||'[]')}catch{return []}}
-function refreshGallery(){const all=savedFish();document.getElementById('fishCards').innerHTML=all.length?all.map((f,i)=>`<article class="card"><h2>${escapeHtml(f.name)}</h2><p>주인: ${escapeHtml(f.owner)}</p><pre>${escapeHtml(`주둥이 x=1.2+${f.snout}(1-(y/${f.mouth})²)\n몸통 높이=${f.body}, 길이=${f.length}\n꼬리=${f.tail}, 주름=${f.folds}개`)}</pre><button data-adopt="${i}">물고기 데려오기</button></article>`).join(''):'<p class="note">아직 저장된 붕어가 없습니다.</p>';document.querySelectorAll('[data-adopt]').forEach(b=>b.onclick=()=>{adopted=all[+b.dataset.adopt];design={...adopted};makeGeometry(design);show('home')})}
+function refreshGallery(){const all=savedFish(),host=document.getElementById('fishCards');host.innerHTML=all.length?all.map((f,i)=>`<article class="card"><h2>${escapeHtml(f.name)}</h2><p>주인: ${escapeHtml(f.owner)}</p><canvas class="fish-preview" data-preview="${i}" width="540" height="276"></canvas><pre>${escapeHtml(`주둥이 x=1.2+${f.snout}(1-(y/${f.mouth})²)\n몸통 높이=${f.body}, 길이=${f.length}\n꼬리=${f.tail}, 주름=${f.folds}개`)}</pre><button data-adopt="${i}">물고기 데려오기</button></article>`).join(''):'<p class="note">아직 저장된 붕어가 없습니다.</p>';
+ host.querySelectorAll('[data-preview]').forEach(c=>{const f=all[+c.dataset.preview],g=c.getContext('2d'),w=c.width,h=c.height,u=w/54,px=x=>(x+27)*u,py=y=>(17.6-y)*u;g.fillStyle=C.water;g.fillRect(0,0,w,h);g.strokeStyle=C.guide;g.globalAlpha=.35;g.lineWidth=1;for(let x=-25;x<=25;x+=5){g.beginPath();g.moveTo(px(x),0);g.lineTo(px(x),h);g.stroke()}for(let y=-10;y<=15;y+=5){g.beginPath();g.moveTo(0,py(y));g.lineTo(w,py(y));g.stroke()}g.globalAlpha=1;g.strokeStyle=C.fish;g.lineWidth=3;for(const path of fishPaths(f)){g.beginPath();path.forEach(([x,y],j)=>j?g.lineTo(px(x*S),py(y*S)):g.moveTo(px(x*S),py(y*S)));g.stroke()}drawEye(g,px(f.eyeX*S),py(f.eyeY*S),7,f.eyeStyle)});
+ host.querySelectorAll('[data-adopt]').forEach(b=>b.onclick=()=>{adopted=all[+b.dataset.adopt];design={...adopted};makeGeometry(design);show('home')})}
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 document.getElementById('browseFish').onclick=()=>{refreshGallery();show('gallery')};
 document.getElementById('saveFish').onclick=()=>{const name=prompt('물고기 이름을 입력해 주세요');if(!name?.trim())return;const owner=prompt('주인의 이름을 입력해 주세요');if(!owner?.trim())return;const all=savedFish();all.push({...design,name:name.trim(),owner:owner.trim()});localStorage.setItem(storageKey,JSON.stringify(all));adopted=all[all.length-1];show('home')};
