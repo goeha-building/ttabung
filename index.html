@@ -56,6 +56,7 @@ pre{margin:0;font-family:var(--f-mono);font-size:13px;line-height:1.7;background
 .editor-controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px 16px}
 .editor-controls label{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:6px 8px;min-width:0}
 .editor-controls input[type=range]{grid-column:1/3;width:100%;min-width:0}
+.editor-controls input[type=range]{accent-color:var(--fish)}
 .editor-controls output{grid-column:3;grid-row:2}
 .info-btn{width:24px;height:24px;padding:0;border-radius:50%;font-family:var(--f-mono);font-weight:600;color:var(--guide);border-color:var(--guide)}
 .eye-options{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
@@ -82,6 +83,7 @@ dialog p{margin:0 0 16px}
 .editor-zoom-hint{font-size:12px;color:var(--muted);margin:0}
 .gallery-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
 .gallery-search{width:min(260px,48%);padding:8px 11px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink);font:inherit}
+.gallery-search::placeholder{color:var(--muted);opacity:1}
 .fish-preview{height:170px;object-fit:contain;background:transparent!important}
 @media(max-width:700px){
   .wrap{padding-block:18px 32px;gap:14px}
@@ -98,15 +100,16 @@ dialog p{margin:0 0 16px}
   .bar button{min-height:42px}
   .bar label{flex-wrap:wrap;min-width:calc(50% - 12px)}
   .bar input[type=range]{width:min(130px,45vw)}
-  dialog{width:calc(100% - 24px);max-width:440px;max-height:calc(100dvh - 24px);overflow:auto;padding:18px}
-  dialog .dialog-actions button{min-width:84px;min-height:42px}
-  .gallery-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  dialog{width:calc(100% - 48px);max-width:360px;max-height:70dvh;overflow:auto;padding:15px;font-size:14px}
+  dialog h2{font-size:19px}
+  dialog .dialog-actions button{min-width:76px;min-height:40px}
+  .gallery-grid{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(78vw,84vw);grid-template-columns:none;gap:12px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;padding:2px 2px 12px}
+  .gallery-grid>.card{scroll-snap-align:start}
   #fishCards .card{padding:12px;gap:7px}
   .fish-preview{height:130px}
   .gallery-search{width:48%;min-width:130px}
 }
 @media(max-width:460px){
-  .gallery-grid{grid-template-columns:1fr}
   .gallery-head{align-items:flex-start;flex-direction:column}
   .gallery-search{width:100%;min-height:42px}
   #editor .tank{max-height:32svh;min-height:132px}
@@ -137,7 +140,8 @@ dialog p{margin:0 0 16px}
       <label>꼬리 주름 수 <button type="button" class="info-btn" data-info="folds" aria-label="꼬리 주름 함수 설명">i</button><input data-part="folds" type="range" min="0" max="8" step="1" value="3"><output>3</output></label>
       <label>눈 x <button type="button" class="info-btn" data-info="eyeX" aria-label="눈 x 좌표 설명">i</button><input data-part="eyeX" type="range" min="0.2" max="1.2" step="0.05" value="1"><output>1.00</output></label>
       <label>눈 y <button type="button" class="info-btn" data-info="eyeY" aria-label="눈 y 좌표 설명">i</button><input data-part="eyeY" type="range" min="-0.45" max="0.55" step="0.05" value="0.03"><output>0.03</output></label>
-      <div class="eye-options"><span>눈 모양</span><button type="button" data-eye="circle" aria-label="동그라미 눈" title="동그라미"><svg class="eye-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/></svg></button><button type="button" data-eye="star" aria-label="별모양 눈" title="별모양"><svg class="eye-icon" viewBox="0 0 24 24"><path d="m12 2 2.9 6.2 6.8.8-5 4.6 1.3 6.7-6-3.4-6 3.4 1.2-6.7-5-4.6 6.9-.8z"/></svg></button><button type="button" data-eye="line" aria-label="일자 눈" title="일자"><svg class="eye-icon" viewBox="0 0 24 24"><path d="M5 12h14" fill="none"/></svg></button><button type="button" data-eye="angry" aria-label="화난 눈" title="화난 눈"><svg class="eye-icon" viewBox="0 0 24 24"><path d="m5 8 7 3 7-3M7 17h10" fill="none"/></svg></button><button type="button" data-eye="square" aria-label="네모 눈" title="네모"><svg class="eye-icon" viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="1"/></svg></button></div>
+      <label>비늘 크기 <button type="button" class="info-btn" data-info="scaleSize" aria-label="비늘 크기 함수 설명">i</button><input data-part="scaleSize" type="range" min="0.7" max="1.3" step="0.05" value="1"><output>1.00</output></label>
+      <div class="eye-options"><span>눈 모양</span><button type="button" data-eye="circle" aria-label="동그라미 눈" title="동그라미"><svg class="eye-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/></svg></button><button type="button" data-eye="star" aria-label="별모양 눈" title="별모양"><svg class="eye-icon" viewBox="0 0 24 24"><path d="m12 2 2.9 6.2 6.8.8-5 4.6 1.3 6.7-6-3.4-6 3.4 1.2-6.7-5-4.6 6.9-.8z"/></svg></button><button type="button" data-eye="line" aria-label="일자 눈" title="일자"><svg class="eye-icon" viewBox="0 0 24 24"><path d="M5 12h14" fill="none"/></svg></button><button type="button" data-eye="x" aria-label="엑스 눈" title="엑스"><svg class="eye-icon" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18" fill="none"/></svg></button><button type="button" data-eye="square" aria-label="네모 눈" title="네모"><svg class="eye-icon" viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="1"/></svg></button></div>
     </div>
     <div id="controlInfo" class="math-explain" hidden></div>
     <div id="fishFormula" class="math-explain"></div>
@@ -225,19 +229,19 @@ let yc1=rng(0,1.092,.05);add(yc1.map(y=>-1.9-.4*(.546**2-(y-.546)**2)),yc1);
 let yc2=rng(-1.092,0,.052);add(yc2.map(y=>-1.9-.4*(.546**2-(y+.546)**2)),yc2);
 const originalP=P.map(p=>p.map(q=>q.slice()));
 
-const defaultFish={snout:.35,mouth:.54,length:2.4,body:.9,tail:1,folds:3,eyeX:1,eyeY:.03,eyeStyle:'circle'};
+const defaultFish={snout:.35,mouth:.54,length:2.4,body:.9,tail:1,folds:3,eyeX:1,eyeY:.03,eyeStyle:'circle',scaleSize:1};
 let design={...defaultFish},adopted=null,editorSaved=false,viewZoom=1,viewPanX=0,viewPanY=0;
 function fishPaths(f){
-  if(f.snout===.35&&f.mouth===.54&&f.length===2.4&&f.body===.9&&f.tail===1&&f.folds===3)return originalP.map(p=>p.map(q=>q.slice()));
+  if(f.snout===.35&&f.mouth===.54&&f.length===2.4&&f.body===.9&&f.tail===1&&f.folds===3&&(f.scaleSize??1)===1)return originalP.map(p=>p.map(q=>q.slice()));
   const paths=[],put=(xs,ys)=>paths.push(xs.map((x,i)=>[x,ys[i]]).filter(p=>Number.isFinite(p[1])));
-  const back=-f.length/2,front=1.2,half=f.mouth,mid=(front+back)/2,radius=(front-back)/2,den=radius*radius;
+  const front=1.2,back=front-f.length,half=f.mouth,mid=(front+back)/2,radius=(front-back)/2,den=radius*radius;
   const xs=rng(back,front,.04),top=xs.map(x=>half+(f.body-half)*Math.max(0,1-((x-mid)/radius)**2));
   put(xs,top);put(xs,top.map(y=>-y));
   const ys=rng(-half,half,.025);put(ys.map(y=>front+f.snout*(1-(y/half)**2)),ys);
   const tailWidth=.7*f.tail,tailEnd=back-tailWidth,tipY=half+.616*f.tail,ts=rng(0,1,.02);
   put(ts.map(t=>back-tailWidth*t),ts.map(t=>half+(1.17-.8*((-1.2-.7*t+2.1)**2)-.522)*f.tail));
   put(ts.map(t=>back-tailWidth*t),ts.map(t=>-half-(1.17-.8*((-1.2-.7*t+2.1)**2)-.522)*f.tail));
-  const capYs=rng(0,tipY,.025);put(capYs.map(y=>back-.4*f.tail*(.546**2-(y/tipY*1.092-.546)**2)),capYs);const lowYs=rng(-tipY,0,.025);put(lowYs.map(y=>back-.4*f.tail*(.546**2-(Math.abs(y)/tipY*1.092-.546)**2)),lowYs);
+  const capYs=rng(0,tipY,.025);put(capYs.map(y=>tailEnd-.4*f.tail*(.546**2-(y/tipY*1.092-.546)**2)),capYs);const lowYs=rng(-tipY,0,.025);put(lowYs.map(y=>tailEnd-.4*f.tail*(.546**2-(Math.abs(y)/tipY*1.092-.546)**2)),lowYs);
   if(f.folds>0){
     const count=f.folds,innerX=back-tailWidth*.72;
     for(let i=0;i<count;i++){
@@ -249,7 +253,7 @@ function fishPaths(f){
       put([back,innerX],[rootY,endY]);
     }
   }
-  const sx=f.length/2.4,sy=Math.min(1,f.body/.9);
+  const scaleSize=f.scaleSize??1,sx=f.length/2.4*scaleSize,sy=Math.min(1,f.body/.9)*scaleSize;
   const scales=[[-.45,-.15,y=>3*(y+.3)**2],[-.15,.15,y=>3*(y-.01)**2],[.15,.45,y=>3*(y-.3)**2],[0,.3,y=>-.3+3*(y-.15)**2],[-.3,0,y=>-.3+3*(y+.15)**2]];
   for(const [lo,hi,fx] of scales){const ys0=rng(lo,hi,.03);put(ys0.map(y=>fx(y)*sx),ys0.map(y=>y*sy))}
   return paths;
@@ -320,29 +324,29 @@ function draw(){
   }
   ctx.strokeStyle=C.fish;ctx.lineWidth=Math.max(2,.09*S*sc);ctx.lineJoin='round';ctx.lineCap='round';
   for(const p of P){ctx.beginPath();p.forEach(([x,y],i)=>{const q=R(x,y);i?ctx.lineTo(...q):ctx.moveTo(...q)});ctx.stroke()}
-  ctx.fillStyle=C.fish;const e=R((adopted||design).eyeX,(adopted||design).eyeY);drawEye(ctx,e[0],e[1],Math.max(2.5,.1*S*sc),(adopted||design).eyeStyle);
+  ctx.fillStyle=C.fish;const fish=adopted||design,e=R(fish.eyeX,fish.eyeY),eyeRadius=Math.max(2.5,.1*S*sc)*(fish.eyeStyle==='star'?1.35:1);drawEye(ctx,e[0],e[1],eyeRadius,fish.eyeStyle,r1);
   if(adopted&&showFishName){ctx.save();ctx.fillStyle=C.ink;ctx.font=`${14*u}px "Noto Sans KR",sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';const head=R(.45,1.45);ctx.fillText(adopted.name||'',head[0],head[1]);ctx.restore()}
   star(X(a.x),Y(a.y),13*u+4);
   ctx.strokeStyle=C.glass;ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(0,Y(17));ctx.lineTo(W,Y(17));ctx.stroke();
 }
 function star(cx,cy,r){ctx.fillStyle=C.star;ctx.beginPath();for(let i=0;i<10;i++){const ang=-Math.PI/2+i*Math.PI/5,rr=i%2?r*.45:r;ctx.lineTo(cx+rr*Math.cos(ang),cy+rr*Math.sin(ang))}ctx.closePath();ctx.fill()}
-function drawEye(c,x,y,r,style){c.save();c.strokeStyle=C.fish;c.fillStyle=C.fish;c.lineWidth=Math.max(2,r*.28);if(style==='circle'){c.beginPath();c.arc(x,y,r,0,Math.PI*2);c.fill()}else if(style==='square'){c.fillRect(x-r,y-r,r*2,r*2)}else if(style==='line'||style==='angry'){c.beginPath();c.moveTo(x-r,y);c.lineTo(x+r,y+(style==='angry'?r*.55:0));c.stroke()}else{c.beginPath();for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,rr=i%2?r*.42:r;c.lineTo(x+rr*Math.cos(a),y+rr*Math.sin(a))}c.closePath();c.fill()}c.restore()}
+function drawEye(c,x,y,r,style,angle=0){c.save();c.translate(x,y);c.rotate(-angle);c.strokeStyle=C.fish;c.fillStyle=C.fish;c.lineWidth=Math.max(2,r*.28);if(style==='circle'){c.beginPath();c.arc(0,0,r,0,Math.PI*2);c.fill()}else if(style==='square'){c.fillRect(-r,-r,r*2,r*2)}else if(style==='line'){c.beginPath();c.moveTo(-r,0);c.lineTo(r,0);c.stroke()}else if(style==='x'||style==='angry'){c.beginPath();c.moveTo(-r,-r);c.lineTo(r,r);c.moveTo(r,-r);c.lineTo(-r,r);c.stroke()}else{c.beginPath();for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,rr=i%2?r*.42:r;c.lineTo(rr*Math.cos(a),rr*Math.sin(a))}c.closePath();c.fill()}c.restore()}
 
 const editor=document.getElementById('editor'),gallery=document.getElementById('gallery'),tankEl=document.getElementById('tank'),bar=document.querySelector('.wrap>.bar'),liveEl=document.getElementById('live'),cardsEl=document.querySelector('.wrap>.cards'),srcEl=document.querySelector('.src');
 const homeEls=[tankEl,bar,liveEl,cardsEl,srcEl];
 function show(which){homeEls.forEach(x=>x.hidden=which!=='home');editor.hidden=which!=='editor';gallery.hidden=which!=='gallery';document.querySelector('.head-actions').hidden=which!=='home'}
-function renderEditor(){makeGeometry(design);document.querySelectorAll('#editor input[type=range]').forEach(i=>{const v=design[i.dataset.part];i.value=v;i.nextElementSibling.value=Number(v).toFixed(2)});document.querySelectorAll('[data-eye]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.eye===design.eyeStyle));
+function renderEditor(){design.scaleSize=design.scaleSize??1;makeGeometry(design);document.querySelectorAll('#editor input[type=range]').forEach(i=>{const v=design[i.dataset.part];i.value=v;i.nextElementSibling.value=Number(v).toFixed(2)});document.querySelectorAll('[data-eye]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.eye===design.eyeStyle));
  const c=document.getElementById('editCv'),g=c.getContext('2d'),w=c.width,h=c.height,unit=w/54,px=x=>((x*viewZoom+viewPanX)+27)*unit,py=y=>(17.6-(y*viewZoom+viewPanY))*unit;
  c.style.height=`${unit*27.6}px`;g.clearRect(0,0,w,h);const bg=g.createLinearGradient(0,0,0,h);bg.addColorStop(0,C.water);bg.addColorStop(1,C['water-deep']);g.fillStyle=bg;g.fillRect(0,0,w,h);
  g.save();g.beginPath();g.rect(0,0,w,h);g.clip();g.strokeStyle=C.guide;g.globalAlpha=.35;g.lineWidth=1;for(let x=-27;x<=27;x+=5){g.beginPath();g.moveTo(px(x),py(17.6));g.lineTo(px(x),py(-10));g.stroke()}for(let y=-10;y<=17;y+=5){g.beginPath();g.moveTo(px(-27),py(y));g.lineTo(px(27),py(y));g.stroke()}g.globalAlpha=.8;g.lineWidth=1.5;g.beginPath();g.moveTo(px(0),py(17.6));g.lineTo(px(0),py(-10));g.moveTo(px(-27),py(0));g.lineTo(px(27),py(0));g.stroke();g.fillStyle=C.ink;g.font='13px "JetBrains Mono",monospace';g.textAlign='center';for(let x=-25;x<=25;x+=5)g.fillText(String(x),px(x),py(-9.1));g.textAlign='left';for(let y=-10;y<=15;y+=5)g.fillText(String(y),px(-26.5),py(y)-3);g.restore();
- g.save();g.beginPath();g.rect(0,0,w,h);g.clip();g.strokeStyle=C.fish;g.lineWidth=Math.max(2,.09*S*unit);g.lineJoin='round';g.lineCap='round';for(const p of P){g.beginPath();p.forEach(([x,y],i)=>i?g.lineTo(px(x*S),py(y*S)):g.moveTo(px(x*S),py(y*S)));g.stroke()}drawEye(g,px(design.eyeX*S),py(design.eyeY*S),Math.max(3,.1*S*unit),design.eyeStyle);g.restore();
- const back=-design.length/2,mid=(1.2+back)/2,radius=(1.2-back)/2;
- document.getElementById('fishFormula').innerHTML=`<h3><small>현재 함수</small>붕어 모양을 만드는 식</h3><p><b>몸통</b>은 가운데 높이와 양 끝 높이를 이차함수로 연결하고, <b>주둥이</b>는 양 끝이 몸통에 닿도록 이어집니다.</p><pre>몸통  y = ±[${design.mouth} + (${design.body}−${design.mouth})(1−((x−${mid.toFixed(2)})/${radius.toFixed(2)})²)]\n주둥이  x = 1.2 + ${design.snout}(1−(y/${design.mouth})²)\n꼬리 폭 계수  ${design.tail} · 주름 수 ${design.folds}\n눈 중심  (${design.eyeX}, ${design.eyeY})</pre><p>몸통 x 범위 [−${(design.length/2).toFixed(2)}, 1.2], 세로 범위 약 [−${design.body}, ${design.body}] · 수조 좌표 x [−27,27], y [−10,17.6]</p>`;
+ g.save();g.beginPath();g.rect(0,0,w,h);g.clip();g.strokeStyle=C.fish;g.lineWidth=Math.max(2,.09*S*unit);g.lineJoin='round';g.lineCap='round';for(const p of P){g.beginPath();p.forEach(([x,y],i)=>i?g.lineTo(px(x*S),py(y*S)):g.moveTo(px(x*S),py(y*S)));g.stroke()}drawEye(g,px(design.eyeX*S),py(design.eyeY*S),Math.max(3,.1*S*unit)*(design.eyeStyle==='star'?1.35:1),design.eyeStyle);g.restore();
+ const back=1.2-design.length,mid=(1.2+back)/2,radius=(1.2-back)/2;
+ document.getElementById('fishFormula').innerHTML=`<h3><small>현재 함수</small>따붕그래프</h3><p><b>몸통</b>은 꼭짓점 높이와 길이를, <b>주둥이</b>는 입의 길이와 높이를 이차함수 계수로 표현합니다.</p><pre>몸통  y = ±[${design.mouth} + (${design.body}−${design.mouth})(1−((x−${mid.toFixed(2)})/${radius.toFixed(2)})²)]\n주둥이  x = 1.2 + ${design.snout}(1−(y/${design.mouth})²)\n비늘  5개 곡선 묶음 × ${design.scaleSize}\n꼬리 폭 계수  ${design.tail} · 주름 수 ${design.folds}\n눈 중심  (${design.eyeX}, ${design.eyeY})</pre><p>몸통 x 범위 [${back.toFixed(2)}, 1.2] (길이 ${design.length}), 세로 범위 약 [−${design.body}, ${design.body}] · 수조 좌표 x [−27,27], y [−10,17.6]</p>`;
  if(activeInfo)showInfo(activeInfo);
 }
 function restoreApplied(){design={...(adopted||defaultFish)};makeGeometry(design);updateNameButton()}
 function leaveEditor(){if(!editorSaved){document.getElementById('unsavedDialog').showModal();return}restoreApplied();show('home')}
-document.getElementById('makeFish').onclick=()=>{design={...(adopted||defaultFish)};viewZoom=1;viewPanX=0;viewPanY=0;editorSaved=false;show('editor');renderEditor()};
+document.getElementById('makeFish').onclick=()=>{const source=adopted||defaultFish;design={...source,scaleSize:source.scaleSize??1};viewZoom=1;viewPanX=0;viewPanY=0;editorSaved=false;show('editor');renderEditor()};
 document.getElementById('editorBack').onclick=leaveEditor;document.getElementById('galleryBack').onclick=()=>show('home');
 const previewTank=document.getElementById('previewTank'),zoomPointers=new Map();let zoomGesture=null;
 const pointerDistance=()=>{const pts=[...zoomPointers.values()];return Math.hypot(pts[0].x-pts[1].x,pts[0].y-pts[1].y)};
@@ -356,14 +360,16 @@ let activeInfo='';
 const infoText={
  snout:()=>`주둥이 이차함수\nx = 1.2 + ${design.snout}(1 − (y/${design.mouth})²)\n바뀌는 계수: 주둥이 길이 ${design.snout} (범위 0~0.8)\n물고기 전체 좌표 범위: x [−27, 27], y [−10, 17.6]`,
  mouth:()=>`주둥이 끝 높이와 몸통 연결 계수\nx = 1.2 + ${design.snout}(1 − (y/${design.mouth})²),  y 범위 [−${design.mouth}, ${design.mouth}]\n바뀌는 계수: 반높이 ${design.mouth} (범위 0.35~0.8)\n몸통 포물선 끝점도 같은 높이에 맞춰 연결`,
- length:()=>`몸통 이차함수의 길이 계수\n중심 m = ${( (1.2-design.length/2)/2 ).toFixed(2)}, 반폭 h = ${((1.2+design.length/2)/2).toFixed(2)}\ny = ±[${design.mouth} + (${design.body}−${design.mouth})(1−((x−m)/h)²)]\n몸통 x 범위 [−${(design.length/2).toFixed(2)}, 1.2] (슬라이더 1.5~2.8)`,
- body:()=>`몸통 이차함수\ny = ±[${design.mouth} + (${design.body}−${design.mouth})(1−((x−${((1.2-design.length/2)/2).toFixed(2)})/${((1.2+design.length/2)/2).toFixed(2)})²)]\n바뀌는 꼭짓점 높이 계수: ${design.body} (범위 0.6~1.25)\n몸통 좌표 범위 y [−${design.body}, ${design.body}]`,
- tail:()=>`꼬리 곡선과 끝마감\ny_top = 1.17 − 0.8(x+2.1)² 를 꼬리 크기 ${design.tail}에 맞춰 변형\nx_cap = b − 0.4·${design.tail}(0.546² − (1.092y/T−0.546)²),  T = ${(design.mouth+.616*design.tail).toFixed(3)}\n꼬리 뿌리 x = −${(design.length/2).toFixed(2)}, 끝 x = −${(design.length/2+.7*design.tail).toFixed(2)}\n몸통과 꼬리 곡선은 뿌리에서 같은 좌표로 연결됩니다.`,
- folds:()=>`꼬리 주름 수 = ${design.folds}\n주름은 뿌리에서 꼬리 안쪽으로 잇는 일차함수입니다. 위쪽은 음의 기울기, 아래쪽은 양의 기울기이며 x축 주름은 y = 0인 수평선입니다.\n렌더링 범위: x [−${(design.length/2+.7*design.tail*.72).toFixed(2)}, −${(design.length/2).toFixed(2)}], 몸통과 꼬리 바깥 경계 안쪽`,
+ length:()=>`몸통 이차함수의 길이 계수\n중심 m = ${(1.2-design.length/2).toFixed(2)}, 반폭 h = ${(design.length/2).toFixed(2)}\ny = ±[${design.mouth} + (${design.body}−${design.mouth})(1−((x−m)/h)²)]\n몸통 x 범위 [${(1.2-design.length).toFixed(2)}, 1.2] (길이 ${design.length}, 슬라이더 1.5~2.8)`,
+ body:()=>`몸통 이차함수\ny = ±[${design.mouth} + (${design.body}−${design.mouth})(1−((x−${(1.2-design.length/2).toFixed(2)})/${(design.length/2).toFixed(2)})²)]\n바뀌는 꼭짓점 높이 계수: ${design.body} (범위 0.6~1.25)\n몸통 좌표 범위 y [−${design.body}, ${design.body}]`,
+ tail:()=>`꼬리 곡선과 끝마감\ny_top = 1.17 − 0.8(x+2.1)² 를 꼬리 크기 ${design.tail}에 맞춰 변형\nx_cap = b − 0.4·${design.tail}(0.546² − (1.092y/T−0.546)²),  T = ${(design.mouth+.616*design.tail).toFixed(3)}\n꼬리 뿌리 x = ${(1.2-design.length).toFixed(2)}, 끝 x = ${(1.2-design.length-.7*design.tail).toFixed(2)}\n몸통과 꼬리 곡선은 뿌리에서 같은 좌표로 연결됩니다.`,
+ folds:()=>`꼬리 주름 수 = ${design.folds}\n주름은 뿌리에서 꼬리 안쪽으로 잇는 일차함수입니다. 위쪽은 음의 기울기, 아래쪽은 양의 기울기이며 x축 주름은 y = 0인 수평선입니다.\n렌더링 범위: x [${(1.2-design.length-.7*design.tail*.72).toFixed(2)}, ${(1.2-design.length).toFixed(2)}], 몸통과 꼬리 바깥 경계 안쪽`,
  eyeX:()=>`눈 중심의 x좌표 = ${design.eyeX}\n허용 범위 [0.2, 1.2], 눈은 몸통 좌표계에서 회전변환됩니다.\n전체 수조 표시 범위 x [−27, 27]`,
- eyeY:()=>`눈 중심의 y좌표 = ${design.eyeY}\n허용 범위 [−0.45, 0.55], 눈은 몸통 좌표계에서 회전변환됩니다.\n전체 수조 표시 범위 y [−10, 17.6]`
+ eyeY:()=>`눈 중심의 y좌표 = ${design.eyeY}\n허용 범위 [−0.45, 0.55], 눈은 몸통 좌표계에서 회전변환됩니다.\n전체 수조 표시 범위 y [−10, 17.6]`,
+ scaleSize:()=>`원래 다섯 비늘 곡선을 한 묶음으로 확대·축소합니다.\nx = ${design.scaleSize}·(${design.length}/2.4)·f(y), y = ${design.scaleSize}·min(1, ${design.body}/0.9)·y₀\nf(y): 3(y+0.3)², 3(y−0.01)², 3(y−0.3)², −0.3+3(y−0.15)², −0.3+3(y+0.15)²\n묶음 배율 ${design.scaleSize} (범위 0.7~1.3); 곡선은 몸통 안쪽으로 제한`
 };
-function showInfo(key){activeInfo=key;const box=document.getElementById('controlInfo');box.hidden=false;box.innerHTML=`<h3><small>함수 설명</small>${({snout:'주둥이 길이',mouth:'주둥이 뭉툭함',length:'몸통 길이',body:'몸통 통통함',tail:'꼬리 크기',folds:'꼬리 주름 수',eyeX:'눈 x좌표',eyeY:'눈 y좌표'})[key]}</h3><p>슬라이더를 움직이면 강조한 계수가 함께 바뀝니다.</p><pre>${infoText[key]()}</pre>`}
+const infoPrinciple={snout:'주둥이의 이차함수 계수가 커지면 꼭짓점이 앞으로 이동해 입이 길어집니다.',mouth:'반높이가 커지면 주둥이의 양 끝 y좌표가 멀어져 입이 둥글고 넓어집니다. 끝점은 몸통에 계속 붙습니다.',length:'몸통의 x 범위가 넓어져 물고기가 길어집니다. 가운데 x좌표도 끝점에 맞춰 함께 계산합니다.',body:'몸통 포물선 꼭짓점의 y좌표가 x축에서 멀어져 몸통이 통통해집니다.',tail:'꼬리 곡선의 폭과 끝마감의 꼭짓점을 뿌리 기준으로 함께 옮겨 꼬리 크기를 바꿉니다.',folds:'꼬리 안쪽 선의 수를 바꿉니다. 축 위 선은 수평, 축 위쪽은 음의 기울기, 아래쪽은 양의 기울기입니다.',eyeX:'눈의 몸통 좌표계 x값을 바꿉니다. 물고기 회전각을 따라 같이 돌아갑니다.',eyeY:'눈의 몸통 좌표계 y값을 바꿉니다. 물고기 회전각을 따라 같이 돌아갑니다.',scaleSize:'기존 다섯 비늘 곡선을 같은 배율로 키우거나 줄입니다. 몸통 경계 밖으로 나가지 않도록 범위를 제한했습니다.'};
+function showInfo(key){activeInfo=key;const box=document.getElementById('controlInfo');box.hidden=false;box.innerHTML=`<h3><small>함수 설명</small>${({snout:'주둥이 길이',mouth:'주둥이 뭉툭함',length:'몸통 길이',body:'몸통 통통함',tail:'꼬리 크기',folds:'꼬리 주름 수',eyeX:'눈 x좌표',eyeY:'눈 y좌표',scaleSize:'비늘 크기'})[key]}</h3><p>${infoPrinciple[key]}</p><pre>${infoText[key]()}</pre>`}
 document.querySelectorAll('[data-info]').forEach(b=>b.onclick=()=>showInfo(b.dataset.info));
 document.getElementById('saveFish').onclick=()=>document.getElementById('saveDialog').showModal();
 document.getElementById('saveCancel').onclick=()=>document.getElementById('saveDialog').close();
@@ -375,7 +381,7 @@ document.getElementById('unsavedNo').onclick=()=>{document.getElementById('unsav
 document.getElementById('unsavedDialog').addEventListener('cancel',e=>e.preventDefault());
 const storageKey='ttabung-fish-v1';function savedFish(){try{return JSON.parse(localStorage.getItem(storageKey)||'[]')}catch{return []}}
 function refreshGallery(query=''){const all=savedFish(),host=document.getElementById('fishCards'),q=query.trim().toLocaleLowerCase('ko');const ranked=all.map((fish,index)=>({fish,index})).filter(({fish})=>!q||String(fish.name||'').toLocaleLowerCase('ko').includes(q)||String(fish.owner||'').toLocaleLowerCase('ko').includes(q)).sort((a,b)=>{if(!q)return a.index-b.index;const an=String(a.fish.name||'').toLocaleLowerCase('ko').includes(q),bn=String(b.fish.name||'').toLocaleLowerCase('ko').includes(q);return an===bn?a.index-b.index:an?-1:1});host.innerHTML=ranked.length?ranked.map(({fish:f,index:i})=>`<article class="card"><h2>${escapeHtml(f.name)}</h2><p>주인: ${escapeHtml(f.owner)}</p>${f.introduction?`<p>${escapeHtml(f.introduction)}</p>`:''}<canvas class="fish-preview" data-preview="${i}" width="720" height="320"></canvas><pre>${escapeHtml(`주둥이 x=1.2+${f.snout}(1-(y/${f.mouth})²)\n몸통 높이=${f.body}, 길이=${f.length}\n꼬리=${f.tail}, 주름=${f.folds}개`)}</pre><button data-adopt="${i}">물고기 데려오기</button></article>`).join(''): `<p class="note">${q?'검색 결과가 없습니다.':'아직 저장된 붕어가 없습니다.'}</p>`;
- host.querySelectorAll('[data-preview]').forEach(c=>{const f=all[+c.dataset.preview],g=c.getContext('2d'),w=c.width,h=c.height,paths=fishPaths(f),pts=paths.flat().map(([x,y])=>[x*S,y*S]);pts.push([f.eyeX*S,f.eyeY*S]);const minX=Math.min(...pts.map(p=>p[0])),maxX=Math.max(...pts.map(p=>p[0])),minY=Math.min(...pts.map(p=>p[1])),maxY=Math.max(...pts.map(p=>p[1])),scale=Math.min((w-56)/(maxX-minX),(h-36)/(maxY-minY)),cx=w/2-(minX+maxX)*scale/2,cy=h/2+(minY+maxY)*scale/2;g.clearRect(0,0,w,h);g.strokeStyle=C.fish;g.lineWidth=5;g.lineCap='round';g.lineJoin='round';for(const path of paths){g.beginPath();path.forEach(([x,y],j)=>j?g.lineTo(cx+x*S*scale,cy-y*S*scale):g.moveTo(cx+x*S*scale,cy-y*S*scale));g.stroke()}drawEye(g,cx+f.eyeX*S*scale,cy-f.eyeY*S*scale,Math.max(5,.1*S*scale),f.eyeStyle)});
+ host.querySelectorAll('[data-preview]').forEach(c=>{const f=all[+c.dataset.preview],g=c.getContext('2d'),w=c.width,h=c.height,paths=fishPaths(f),pts=paths.flat().map(([x,y])=>[x*S,y*S]);pts.push([f.eyeX*S,f.eyeY*S]);const minX=Math.min(...pts.map(p=>p[0])),maxX=Math.max(...pts.map(p=>p[0])),minY=Math.min(...pts.map(p=>p[1])),maxY=Math.max(...pts.map(p=>p[1])),scale=Math.min((w-56)/(maxX-minX),(h-36)/(maxY-minY)),cx=w/2-(minX+maxX)*scale/2,cy=h/2+(minY+maxY)*scale/2;g.clearRect(0,0,w,h);g.strokeStyle=C.fish;g.lineWidth=5;g.lineCap='round';g.lineJoin='round';for(const path of paths){g.beginPath();path.forEach(([x,y],j)=>j?g.lineTo(cx+x*S*scale,cy-y*S*scale):g.moveTo(cx+x*S*scale,cy-y*S*scale));g.stroke()}drawEye(g,cx+f.eyeX*S*scale,cy-f.eyeY*S*scale,Math.max(5,.1*S*scale)*(f.eyeStyle==='star'?1.35:1),f.eyeStyle)});
  host.querySelectorAll('[data-adopt]').forEach(b=>b.onclick=()=>{adopted=all[+b.dataset.adopt];design={...adopted};showFishName=true;makeGeometry(design);updateNameButton();show('home')})}
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 document.getElementById('browseFish').onclick=()=>{const search=document.getElementById('fishSearch');search.value='';refreshGallery();show('gallery')};
