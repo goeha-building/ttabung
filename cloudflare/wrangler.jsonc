@@ -1,0 +1,18 @@
+{
+  "$schema": "https://raw.githubusercontent.com/cloudflare/workers-sdk/main/packages/wrangler/config-schema.json",
+  "name": "ttabung-fish-api",
+  "main": "src/index.js",
+  "compatibility_date": "2026-11-05",
+  "observability": { "enabled": true, "head_sampling_rate": 0.1 },
+  "vars": {
+    "ALLOWED_ORIGINS": "https://goeha-building.github.io,http://localhost:8787"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "ttabung-public-fish",
+      "database_id": "a84ae8d8-4025-4f79-87d0-e6f2bab3070d",
+      "migrations_dir": "migrations"
+    }
+  ]
+}

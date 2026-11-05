@@ -1,0 +1,3 @@
+# Local Cloudflare secrets and generated development state
+cloudflare/.dev.vars
+cloudflare/.wrangler/
