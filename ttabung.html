@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>body{margin:0}[hidden]{display:none!important}</style>
+<title>따붕 수조</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* layout: 수조 캔버스가 주인공, 아래에 조작 막대와 수식 해부 카드 4장 */
+:root{
+  --bg:#eef4f3; --paper:#ffffff; --ink:#15302e; --muted:#557370; --line:#cfdedc;
+  --water:#d7eef2; --water-deep:#a9d5df; --glass:#2c4a48; --fish:#f07a12; --star:#d6362f;
+  --weed:#3f9a52; --bubble:#3c7fb8; --guide:#6a4bc4;
+  --f-display:"Jua","Noto Sans KR",system-ui,sans-serif;
+  --f-body:"Noto Sans KR",system-ui,-apple-system,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0e1a1d; --paper:#14252a; --ink:#e3efed; --muted:#93b0ad; --line:#26413f;
+  --water:#123844; --water-deep:#0a2630; --glass:#8fb7b3; --fish:#ff9233; --star:#ff5a50;
+  --weed:#5cc06e; --bubble:#7fb8ea; --guide:#b39cff; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e1a1d; --paper:#14252a; --ink:#e3efed; --muted:#93b0ad; --line:#26413f;
+  --water:#123844; --water-deep:#0a2630; --glass:#8fb7b3; --fish:#ff9233; --star:#ff5a50;
+  --weed:#5cc06e; --bubble:#7fb8ea; --guide:#b39cff; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.65}
+.wrap{max-width:1040px;margin:0 auto;padding-block:28px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:20px}
+header{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 16px}
+h1{font-family:var(--f-display);font-weight:400;font-size:clamp(34px,6vw,52px);line-height:1;margin:0;color:var(--fish)}
+header p{margin:0;color:var(--muted);max-width:60ch}
+.head-actions{margin-left:auto;display:flex;gap:8px;align-items:center}
+.tank{position:relative;border:3px solid var(--glass);border-radius:6px 6px 14px 14px;overflow:hidden;background:var(--paper);touch-action:none;cursor:none}
+canvas{display:block;width:100%;height:auto}
+.hint{position:absolute;left:12px;top:10px;font-size:13px;color:var(--muted);background:color-mix(in srgb,var(--paper) 75%,transparent);padding:2px 10px;border-radius:99px;pointer-events:none}
+.bar{display:flex;flex-wrap:wrap;gap:12px 22px;align-items:center;font-size:14px}
+.bar label{display:flex;align-items:center;gap:8px;color:var(--muted)}
+.bar input[type=range]{width:130px;accent-color:var(--fish)}
+.bar output{font-family:var(--f-mono);color:var(--ink);min-width:2.5em;font-variant-numeric:tabular-nums}
+button{font:inherit;font-size:14px;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:6px 14px;cursor:pointer}
+button[aria-pressed=true]{border-color:var(--guide);color:var(--guide)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--guide);outline-offset:2px}
+.live{font-family:var(--f-mono);font-size:13px;color:var(--muted);display:flex;flex-wrap:wrap;gap:4px 18px;font-variant-numeric:tabular-nums}
+.live b{color:var(--ink);font-weight:600}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,440px),1fr));gap:16px}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:18px 20px;min-width:0;display:grid;gap:10px;align-content:start}
+.card h2{font-family:var(--f-display);font-weight:400;font-size:22px;margin:0;text-wrap:balance}
+.card h2 small{font-family:var(--f-body);font-size:12px;color:var(--muted);letter-spacing:.06em;margin-right:8px}
+.card p{margin:0}
+pre{margin:0;font-family:var(--f-mono);font-size:13px;line-height:1.7;background:var(--bg);border-radius:8px;padding:10px 12px;overflow-x:auto;white-space:pre}
+.note{font-size:13px;color:var(--muted)}
+.src{font-size:13px;color:var(--muted)}
+.src a{color:var(--guide)}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>따붕</h1>
+    <p>따라오는 붕어. 수조 안에서 빨간 별을 움직이면 금붕어가 쫓아옵니다. 원작 Desmos 그래프의 수식을 그대로 옮겨 만들었습니다.</p>
+    <div class="head-actions"><button id="makeFish">나만의 붕어 만들기</button><button id="browseFish">다른 사람의 붕어 구경하기</button></div>
+  </header>
+
+  <section class="card" id="editor" hidden>
+    <h2>나만의 붕어 만들기</h2>
+    <div class="tank"><canvas id="editCv" width="1080" height="560" aria-label="만드는 중인 붕어 미리보기"></canvas></div>
+    <div class="bar">
+      <label>주둥이 길이 <input data-part="snout" type="range" min="0" max="0.8" step="0.05" value="0.35"><output>0.35</output></label>
+      <label>주둥이 뭉툭함 <input data-part="mouth" type="range" min="0.35" max="0.8" step="0.05" value="0.54"><output>0.54</output></label>
+      <label>몸통 길이 <input data-part="length" type="range" min="1.5" max="2.8" step="0.05" value="2.2"><output>2.20</output></label>
+      <label>몸통 통통함 <input data-part="body" type="range" min="0.6" max="1.25" step="0.05" value="0.9"><output>0.90</output></label>
+      <label>꼬리 크기 <input data-part="tail" type="range" min="0.45" max="1.2" step="0.05" value="0.8"><output>0.80</output></label>
+      <label>꼬리 주름 수 <input data-part="folds" type="range" min="0" max="8" step="1" value="3"><output>3</output></label>
+      <label>눈 x <input data-part="eyeX" type="range" min="0.2" max="1.2" step="0.05" value="0.65"><output>0.65</output></label>
+      <label>눈 y <input data-part="eyeY" type="range" min="-0.45" max="0.55" step="0.05" value="0.3"><output>0.30</output></label>
+      <label>눈 모양 <select id="eyeStyle"><option value="circle">별모양</option><option value="square">네모</option><option value="angry">화난모양</option><option value="line">ㅡ 모양</option></select></label>
+    </div>
+    <pre id="fishFormula"></pre>
+    <p class="note">몸통의 이차함수 끝점은 주둥이와 꼬리의 시작점에 맞춰 다시 계산합니다. 비늘과 아가미는 몸통 경계 안쪽에만 배치됩니다.</p>
+    <div class="bar"><button id="saveFish">저장하기</button><button id="editorBack">수조로 돌아가기</button></div>
+  </section>
+  <section class="card" id="gallery" hidden><h2>다른 사람의 붕어</h2><div class="cards" id="fishCards"></div><p class="note">이 HTML만으로 배포한 GitHub Pages는 방문자 간 공용 데이터베이스에 쓸 수 없습니다. 현재 저장한 붕어는 이 브라우저에 보관됩니다.</p><button id="galleryBack">수조로 돌아가기</button></section>
+
+  <div class="tank" id="tank">
+    <canvas id="cv" width="1080" height="560" aria-label="금붕어가 빨간 별을 따라 헤엄치는 수조"></canvas>
+    <span class="hint" id="hint">수조 위에서 마우스를 움직이거나 손가락으로 끌어 보세요</span>
+  </div>
+
+  <div class="bar">
+    <button id="guide" aria-pressed="true">수학 보조선 보기</button>
+    <label for="k">내분 비 k : 1 <input id="k" type="range" min="2" max="40" step="1" value="15"><output id="kOut">15</output></label>
+    <label for="sz">확대 배율 <input id="sz" type="range" min="1" max="3" step="0.1" value="1.6"><output id="szOut">1.6</output></label>
+    <button id="play" aria-pressed="false">일시정지</button>
+  </div>
+
+  <div class="live" id="live"></div>
+
+  <div class="cards">
+    <section class="card">
+      <h2><small>원리 1</small>왜 나만 따라올까 — 내분점</h2>
+      <p>Desmos의 Ticker가 매 틱마다 물고기 좌표를 다시 계산합니다. 지금 위치와 목표 위치를 <b id="kTxt">15</b> : 1로 내분한 점으로 옮기므로, 남은 거리가 매번 같은 비율로 줄어듭니다.</p>
+<pre id="f1">x₁ ← (15·x₁ + aₓ − 1.2·cos r₁) / 16
+y₁ ← (15·y₁ + a_y − 1.2·sin r₁) / 16</pre>
+      <p class="note">목표에서 1.2·(cos r₁, sin r₁)을 빼는 이유는 몸통 중심이 아니라 입(몸통 앞 1.2)이 별에 닿게 하려는 것입니다. 남은 거리는 한 틱에 k/(k+1)배가 되어 <span id="decay"></span></p>
+    </section>
+
+    <section class="card">
+      <h2><small>원리 2</small>왜 나만 바라볼까 — 역탄젠트</h2>
+      <p>물고기에서 별까지를 빗변으로 하는 직각삼각형을 떠올리면 tan r₁ = (y 변화량)/(x 변화량)입니다. 두 인수 arctan은 사분면까지 구분해 각을 돌려줍니다.</p>
+<pre>r₁ = arctan(a_y − y₁, a_x − x₁)</pre>
+      <p class="note">보조선의 보라색 호가 지금의 r₁입니다. 별이 물고기 왼쪽으로 가도 각이 끊기지 않고 −180°~180° 범위에서 정해집니다.</p>
+    </section>
+
+    <section class="card">
+      <h2><small>원리 3</small>몸통 — 회전변환과 평행이동</h2>
+      <p>물고기는 원점 근처의 고정된 좌표계에 그려 두고, 매 순간 r₁만큼 회전한 뒤 (x₁, y₁)으로 옮깁니다.</p>
+<pre>R(x, y) = ( x·cos r₁ − y·sin r₁ + x₁ ,
+            x·sin r₁ + y·cos r₁ + y₁ )</pre>
+      <p class="note">몸통 위아래 y = ±(0.9 − 0.25x²), 입 x = 1.2 + 1.2(0.54² − y²), 아가미 6줄, 꼬리 곡선과 끝마감까지 이차함수 13개, 일차함수 2개, 눈 1개로 이루어져 있습니다.</p>
+    </section>
+
+    <section class="card">
+      <h2><small>원리 4</small>물결·미역·공기방울 — sin 함수</h2>
+<pre>수면   y = 16 + 0.3·sin(0.8x + 1.5t)
+미역   x = c + A·sin(ωy + νt)·(y + 10)/L
+방울   y = mod(t/8 + 위상, 25) − 10</pre>
+      <p class="note">미역은 (y + 10)/L을 곱해 뿌리(y = −10)는 고정되고 위로 갈수록 크게 흔들립니다. 공기방울은 나머지 함수 mod로 위로 올라가다 바닥으로 되돌아오고, sin으로 좌우로 흔들립니다.</p>
+    </section>
+  </div>
+
+  <p class="src">원작: <a href="https://www.desmos.com/calculator/w4jflvsaim?lang=ko" target="_blank" rel="noopener">Desmos 그래프 「따붕」</a> · 수조 범위 x ∈ [−27, 27], y ∈ [−10, 17], 물고기 목표는 x ∈ [−25.5, 25.5], y ∈ [−9, 14.5]로 제한</p>
+</div>
+
+<script>
+(()=>{
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),tank=document.getElementById('tank');
+const XMIN=-27,XMAX=27,YMIN=-10,YMAX=17.6;
+let W,H,sc,dpr;
+function resize(){dpr=Math.min(2,window.devicePixelRatio||1);const w=tank.clientWidth;W=w;H=w*(YMAX-YMIN)/(XMAX-XMIN);cv.width=W*dpr;cv.height=H*dpr;cv.style.height=H+'px';sc=W/(XMAX-XMIN);ctx.setTransform(dpr,0,0,dpr,0,0)}
+const X=x=>(x-XMIN)*sc,Y=y=>(YMAX-y)*sc;
+let C={};function readColors(){const s=getComputedStyle(document.documentElement);['water','water-deep','glass','fish','star','weed','bubble','guide','ink','paper','muted'].forEach(k=>C[k]=s.getPropertyValue('--'+k).trim())}
+readColors();matchMedia('(prefers-color-scheme: dark)').addEventListener('change',readColors);new MutationObserver(readColors).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+
+const rng=(a,b,s)=>{const o=[];const n=Math.round((b-a)/s);for(let i=0;i<=n;i++)o.push(+(a+i*s).toFixed(6));return o};
+const P=[];const add=(xs,ys,closed)=>P.push(xs.map((x,i)=>[x,ys[i]]).filter(p=>p[1]!==undefined));
+let t1=rng(-1.2,1.2,.05);add(t1,t1.map(x=>.9-.25*x*x));add(t1,t1.map(x=>-.9+.25*x*x));
+let ym=rng(-.54,.54,.04);add(ym.map(y=>1.2+1.2*(.54*.54-y*y)),ym);
+const gill=(ys,f)=>add(ys.map(f),ys);
+let yg1=rng(.15,.45,.05);gill(yg1,y=>3*(y-.3)**2);
+let yg2=rng(-.15,.15,.03);gill(yg2,y=>3*(y-.01)**2);
+gill(rng(-.45,-.15,.03),y=>3*(y+.3)**2);
+gill(rng(0,.3,.03),y=>-.3+3*(y-.15)**2);
+gill(rng(-.3,0,.03),y=>-.3+3*(y+.15)**2);
+let yg6=rng(-.35,.75,.07);add(yg2.map(y=>.6+2.5*(y-.01)**2),yg6);
+let xt=rng(-1.9,-1.2,.05);add(xt,xt.map(x=>1.17-.8*(x+2.1)**2));add(xt,xt.map(x=>-1.17+.8*(x+2.1)**2));
+let xs3=[-1.5,-1.4,-1.3];add(xs3,xs3.map(x=>x+1.1));add(xs3,xs3.map(x=>-x-1.1));add(xs3,xs3.map(()=>0));
+let yc1=rng(0,1.092,.05);add(yc1.map(y=>-1.9-.4*(.546**2-(y-.546)**2)),yc1);
+let yc2=rng(-1.092,0,.052);add(yc2.map(y=>-1.9-.4*(.546**2-(y+.546)**2)),yc2);
+
+const defaultFish={snout:0,mouth:.54,length:2.2,body:.9,tail:.8,folds:3,eyeX:1,eyeY:.03,eyeStyle:'circle'};
+let design={...defaultFish},adopted=null;
+function makeGeometry(f){
+  P.length=0;const back=-f.length,front=1.2,half=f.mouth;
+  const xs=rng(back,front,.04),mid=(front+back)/2,radius=(front-back)/2;
+  const top=xs.map(x=>half+(f.body-half)*Math.max(0,1-((x-mid)/radius)**2));
+  add(xs,top);add(xs,top.map(y=>-y));
+  const ys=rng(-half,half,.025);add(ys.map(y=>front+f.snout*(1-(y/half)**2)),ys);
+  const tailRoot=back,tailEnd=back-f.tail*1.2;
+  add(rng(0,1,.03).map(t=>tailRoot+(tailEnd-tailRoot)*t),rng(0,1,.03).map(t=>half*(1-t)+.05*Math.sin(t*Math.PI)));
+  add(rng(0,1,.03).map(t=>tailRoot+(tailEnd-tailRoot)*t),rng(0,1,.03).map(t=>-half*(1-t)-.05*Math.sin(t*Math.PI)));
+  for(let i=1;i<=f.folds;i++){const q=i/(f.folds+1),y=half*(q*2-1);add([back-f.tail*.08,back-f.tail*(.2+q*.65),tailEnd],[y, y*.55,0])}
+  // Inside-only scale arcs; the quadratic body boundary is sampled at each x.
+  for(let row=-2;row<=2;row++){const yy=row*f.body*.22;for(let col=0;col<5;col++){const x=-1.35+col*.48;const bound=half+(f.body-half)*(1-((x-front)**2/den));if(Math.abs(yy)<bound-.12)add([x-.12,x,x+.12],[yy,yy+.1,yy])}}
+  const gs=rng(-.35,.35,.035);add(gs.map(y=>-.05+.35*(1-(y/.35)**2)),gs);
+}
+
+const BUB=[
+ {x:[-8,-4,0,5,9],a:.5,f:'sin',d:8,dy:8,ph:[10,40,70,25,85],s:11},
+ {x:[-6,-2,3,7],a:.8,f:'cos',d:12,dy:10,ph:[15,55,35,95],s:14},
+ {x:[-5,2,6],a:1.2,f:'sin',d:15,dy:14,ph:[5,50,80],s:20},
+ {x:[-13,-10,10],a:1.2,f:'sin',d:15,dy:14,ph:[5,50,84],s:15},
+ {x:[-20,20,18],a:1.2,f:'sin',d:15,dy:14,ph:[4,45,90],s:12},
+ {x:[-18,24,-21],a:1.2,f:'sin',d:15,dy:14,ph:[10,82,88],s:19},
+ {x:[-17,25,17],a:1.2,f:'sin',d:15,dy:14,ph:[18,50,80],s:7}];
+const WEED={1:{c:0,a:.3,w:.6,v:.7,L:12,top:-2},2:{c:-2.5,a:.35,w:.8,v:.8,L:9,top:1},3:{c:2.2,a:.4,w:.5,v:.5,L:14,top:3},4:{c:-4.5,a:.25,w:.9,v:.9,L:7,top:0},5:{c:4,a:.35,w:.7,v:.6,L:11,top:-3}};
+const WEEDS=[[1,0,8],[2,0,12],[3,0,10],[4,0,9],[5,0,6],[5,-25,9],[2,-20,10],[4,-21,7],[1,13,8],[4,19,10],[4,27,9],[2,27,12],[5,22,7]];
+
+let a={x:18.23,y:4.65},x1=17.03,y1=4.63,time=0,k=15,S=1.6,guide=true,paused=false,lastUser=-1e9,r1=0;
+const clamp=(v,lo,hi)=>Math.min(Math.max(v,lo),hi);
+function pt(e){const r=cv.getBoundingClientRect();return{x:XMIN+(e.clientX-r.left)/sc,y:YMAX-(e.clientY-r.top)/sc}}
+tank.addEventListener('pointermove',e=>{a=pt(e);lastUser=performance.now();hint.hidden=true});
+tank.addEventListener('pointerdown',e=>{a=pt(e);lastUser=performance.now();hint.hidden=true;tank.setPointerCapture(e.pointerId)});
+const hint=document.getElementById('hint');
+
+function tick(){
+  if(performance.now()-lastUser>4000){const s=time*0.012;a={x:20*Math.sin(s*1.3),y:2.5+9*Math.sin(s*2.1+1)}}
+  const ac={x:clamp(a.x,-25.5,25.5),y:clamp(a.y,-9,14.5)};
+  r1=Math.atan2(a.y-y1,a.x-x1);
+  const L=(1.2+(adopted||design).snout)*S;
+  x1=(k*x1+ac.x-L*Math.cos(r1))/(k+1);
+  y1=(k*y1+ac.y-L*Math.sin(r1))/(k+1);
+  time+=0.4;
+}
+function R(x,y){const c=Math.cos(r1),s=Math.sin(r1);x*=S;y*=S;return[X(x*c-y*s+x1),Y(x*s+y*c+y1)]}
+
+function draw(){
+  const u=W/1000;
+  ctx.clearRect(0,0,W,H);
+  const g=ctx.createLinearGradient(0,Y(16),0,Y(-10));g.addColorStop(0,C.water);g.addColorStop(1,C['water-deep']);
+  ctx.fillStyle=g;ctx.beginPath();ctx.moveTo(X(-27),Y(-10));
+  for(let x=-27;x<=27.01;x+=.25)ctx.lineTo(X(x),Y(16+.3*Math.sin(.8*x+1.5*time)));
+  ctx.lineTo(X(27),Y(-10));ctx.closePath();ctx.fill();
+  ctx.strokeStyle=C.bubble;ctx.lineWidth=3*u;ctx.setLineDash([10*u,8*u]);ctx.beginPath();
+  for(let x=-27;x<=27.01;x+=.25){const p=[X(x),Y(16+.3*Math.sin(.8*x+1.5*time))];x===-27?ctx.moveTo(...p):ctx.lineTo(...p)}ctx.stroke();
+  ctx.lineWidth=1.5*u;ctx.setLineDash([2*u,5*u]);ctx.beginPath();
+  for(let x=-27;x<=27.01;x+=.25){const p=[X(x),Y(16+.3*Math.sin(.8*x+time))];x===-27?ctx.moveTo(...p):ctx.lineTo(...p)}ctx.stroke();ctx.setLineDash([]);
+  ctx.strokeStyle=C.weed;ctx.lineCap='round';
+  for(const [id,off,sz] of WEEDS){const m=WEED[id];ctx.lineWidth=sz*.55*u;ctx.beginPath();
+    for(let y=-10;y<=m.top+1e-6;y+=.1){const x=m.c+off+m.a*Math.sin(m.w*y+m.v*time)*(y+10)/m.L;y===-10?ctx.moveTo(X(x),Y(y)):ctx.lineTo(X(x),Y(y))}ctx.stroke()}
+  ctx.strokeStyle=C.bubble;ctx.lineWidth=1.6*u;
+  for(const b of BUB)b.x.forEach((bx,i)=>{const tr=b.f==='sin'?Math.sin:Math.cos;const x=bx+b.a*tr(time/b.d+i+1);const y=((time/b.dy+b.ph[i])%25)-10;ctx.beginPath();ctx.arc(X(x),Y(y),b.s*.55*u,0,7);ctx.stroke()});
+
+  const ac={x:clamp(a.x,-25.5,25.5),y:clamp(a.y,-9,14.5)};
+  if(guide){
+    const fx=X(x1),fy=Y(y1);
+    ctx.strokeStyle=C.guide;ctx.fillStyle=C.guide;ctx.lineWidth=1.4*u;
+    ctx.setLineDash([6*u,5*u]);ctx.beginPath();ctx.moveTo(fx,fy);ctx.lineTo(fx+90*u,fy);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(fx,fy);ctx.lineTo(X(a.x),Y(a.y));ctx.stroke();ctx.setLineDash([]);
+    ctx.lineWidth=2*u;ctx.beginPath();ctx.arc(fx,fy,38*u,0,-r1,r1>0);ctx.stroke();
+    ctx.font=`${Math.max(11,14*u)}px "JetBrains Mono",monospace`;
+    const deg=Math.round(r1*180/Math.PI);ctx.fillText(`r₁ = ${deg}°`,fx+44*u*Math.cos(-r1/2)+4,fy+44*u*Math.sin(-r1/2)+4);
+    const L=(1.2+(adopted||design).snout)*S,tx=ac.x-L*Math.cos(r1),ty=ac.y-L*Math.sin(r1);
+    const nx=(k*x1+tx)/(k+1),ny=(k*y1+ty)/(k+1);
+    ctx.beginPath();ctx.arc(X(tx),Y(ty),5*u,0,7);ctx.stroke();
+    ctx.beginPath();ctx.arc(X(nx),Y(ny),4*u,0,7);ctx.fill();
+    ctx.beginPath();ctx.arc(fx,fy,3.5*u,0,7);ctx.fill();
+    if(a.x!==ac.x||a.y!==ac.y){ctx.beginPath();ctx.arc(X(ac.x),Y(ac.y),7*u,0,7);ctx.stroke()}
+  }
+  ctx.strokeStyle=C.fish;ctx.lineWidth=Math.max(2,.09*S*sc);ctx.lineJoin='round';ctx.lineCap='round';
+  for(const p of P){ctx.beginPath();p.forEach(([x,y],i)=>{const q=R(x,y);i?ctx.lineTo(...q):ctx.moveTo(...q)});ctx.stroke()}
+  ctx.fillStyle=C.fish;const e=R((adopted||design).eyeX,(adopted||design).eyeY);drawEye(ctx,e[0],e[1],Math.max(2.5,.1*S*sc),(adopted||design).eyeStyle);
+  if(adopted){ctx.save();ctx.translate(...R(0,1.45));ctx.scale(1,-1);ctx.fillStyle=C.ink;ctx.font=`${14*u}px "Noto Sans KR",sans-serif`;ctx.textAlign='center';ctx.fillText(adopted.name||'',0,0);ctx.restore()}
+  star(X(a.x),Y(a.y),13*u+4);
+  ctx.strokeStyle=C.glass;ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(0,Y(17));ctx.lineTo(W,Y(17));ctx.stroke();
+}
+function star(cx,cy,r){ctx.fillStyle=C.star;ctx.beginPath();for(let i=0;i<10;i++){const ang=-Math.PI/2+i*Math.PI/5,rr=i%2?r*.45:r;ctx.lineTo(cx+rr*Math.cos(ang),cy+rr*Math.sin(ang))}ctx.closePath();ctx.fill()}
+function drawEye(c,x,y,r,style){c.save();c.strokeStyle=C.fish;c.fillStyle=C.fish;c.lineWidth=Math.max(2,r*.28);if(style==='square'){c.fillRect(x-r,y-r,r*2,r*2)}else if(style==='line'||style==='angry'){c.beginPath();c.moveTo(x-r,y);c.lineTo(x+r,y+(style==='angry'?r*.55:0));c.stroke()}else{c.beginPath();for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,rr=i%2?r*.42:r;c.lineTo(x+rr*Math.cos(a),y+rr*Math.sin(a))}c.closePath();c.fill()}c.restore()}
+
+const editor=document.getElementById('editor'),gallery=document.getElementById('gallery'),tankEl=document.getElementById('tank'),bar=document.querySelector('.wrap>.bar'),liveEl=document.getElementById('live'),cardsEl=document.querySelector('.wrap>.cards'),srcEl=document.querySelector('.src');
+const homeEls=[tankEl,bar,liveEl,cardsEl,srcEl];
+function show(which){homeEls.forEach(x=>x.hidden=which!=='home');editor.hidden=which!=='editor';gallery.hidden=which!=='gallery'}
+function renderEditor(){makeGeometry(design);document.querySelectorAll('#editor input[type=range]').forEach(i=>{const v=design[i.dataset.part];i.value=v;i.nextElementSibling.value=Number(v).toFixed(2)});document.getElementById('eyeStyle').value=design.eyeStyle;
+ const c=document.getElementById('editCv'),g=c.getContext('2d'),w=c.width,h=c.height;g.clearRect(0,0,w,h);g.fillStyle=C.water;g.fillRect(0,0,w,h);g.save();g.translate(w*.52,h*.52);g.scale(85,-85);g.strokeStyle=C.fish;g.lineWidth=.045;g.lineJoin='round';g.lineCap='round';for(const p of P){g.beginPath();p.forEach(([x,y],i)=>i?g.lineTo(x,y):g.moveTo(x,y));g.stroke()}drawEye(g,design.eyeX,design.eyeY,.11,design.eyeStyle);g.restore();
+ const back=-design.length,mid=(1.2+back)/2,radius=(1.2-back)/2;
+ document.getElementById('fishFormula').textContent=`몸통: y = ±[${design.mouth} + (${design.body}-${design.mouth})(1-((x-${mid.toFixed(2)})/${radius.toFixed(2)})²)]\n주둥이: x = 1.2 + ${design.snout}(1-(y/${design.mouth})²)\n꼬리 폭 계수: ${design.tail}; 꼬리 주름: ${design.folds}개\n눈 중심: (${design.eyeX}, ${design.eyeY})`;
+}
+document.getElementById('makeFish').onclick=()=>{design={...(adopted||design)};show('editor');renderEditor()};
+document.getElementById('editorBack').onclick=()=>show('home');document.getElementById('galleryBack').onclick=()=>show('home');
+document.querySelectorAll('#editor input[type=range]').forEach(i=>i.oninput=()=>{design[i.dataset.part]=+i.value;renderEditor()});document.getElementById('eyeStyle').onchange=e=>{design.eyeStyle=e.target.value;renderEditor()};
+const storageKey='ttabung-fish-v1';function savedFish(){try{return JSON.parse(localStorage.getItem(storageKey)||'[]')}catch{return []}}
+function refreshGallery(){const all=savedFish();document.getElementById('fishCards').innerHTML=all.length?all.map((f,i)=>`<article class="card"><h2>${escapeHtml(f.name)}</h2><p>주인: ${escapeHtml(f.owner)}</p><pre>${escapeHtml(`주둥이 x=1.2+${f.snout}(1-(y/${f.mouth})²)\n몸통 높이=${f.body}, 길이=${f.length}\n꼬리=${f.tail}, 주름=${f.folds}개`)}</pre><button data-adopt="${i}">물고기 데려오기</button></article>`).join(''):'<p class="note">아직 저장된 붕어가 없습니다.</p>';document.querySelectorAll('[data-adopt]').forEach(b=>b.onclick=()=>{adopted=all[+b.dataset.adopt];design={...adopted};makeGeometry(design);show('home')})}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+document.getElementById('browseFish').onclick=()=>{refreshGallery();show('gallery')};
+document.getElementById('saveFish').onclick=()=>{const name=prompt('물고기 이름을 입력해 주세요');if(!name?.trim())return;const owner=prompt('주인의 이름을 입력해 주세요');if(!owner?.trim())return;const all=savedFish();all.push({...design,name:name.trim(),owner:owner.trim()});localStorage.setItem(storageKey,JSON.stringify(all));adopted=all[all.length-1];show('home')};
+
+const live=document.getElementById('live');
+function readout(){const ac={x:clamp(a.x,-25.5,25.5),y:clamp(a.y,-9,14.5)};const f=v=>v.toFixed(2);
+  live.innerHTML=`<span>별 a = (<b>${f(a.x)}</b>, <b>${f(a.y)}</b>)</span><span>a_clamped = (<b>${f(ac.x)}</b>, <b>${f(ac.y)}</b>)</span><span>물고기 (x₁, y₁) = (<b>${f(x1)}</b>, <b>${f(y1)}</b>)</span><span>r₁ = <b>${f(r1)}</b> rad = <b>${Math.round(r1*180/Math.PI)}°</b></span><span>time = <b>${time.toFixed(1)}</b></span>`}
+function setK(v){k=v;document.getElementById('kOut').textContent=v;document.getElementById('kTxt').textContent=v;
+  document.getElementById('f1').textContent=`x₁ ← (${k}·x₁ + aₓ − 1.2·cos r₁) / ${k+1}\ny₁ ← (${k}·y₁ + a_y − 1.2·sin r₁) / ${k+1}`;
+  const r=k/(k+1),p=Math.pow(r,30)*100;document.getElementById('decay').textContent=`1초(약 30틱) 뒤에는 처음 거리의 (${k}/${k+1})³⁰ ≈ ${p<.1?p.toExponential(1):p.toFixed(1)}%만 남습니다.`}
+document.getElementById('k').addEventListener('input',e=>setK(+e.target.value));
+document.getElementById('sz').addEventListener('input',e=>{S=+e.target.value;document.getElementById('szOut').textContent=S.toFixed(1)});
+const gb=document.getElementById('guide');gb.onclick=()=>{guide=!guide;gb.setAttribute('aria-pressed',guide)};
+const pb=document.getElementById('play');pb.onclick=()=>{paused=!paused;pb.setAttribute('aria-pressed',paused);pb.textContent=paused?'다시 재생':'일시정지'};
+setK(15);resize();addEventListener('resize',resize);
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+let acc=0,last=performance.now(),n=0;
+function loop(now){const dt=Math.min(.1,(now-last)/1000);last=now;if(!paused){acc+=dt;while(acc>=1/30){tick();acc-=1/30}}draw();if(++n%6===0)readout();requestAnimationFrame(loop)}
+if(reduce){paused=true;pb.setAttribute('aria-pressed',true);pb.textContent='다시 재생';for(let i=0;i<40;i++)tick()}
+requestAnimationFrame(loop);
+})();
+</script>
+
+</body>
+</html>
