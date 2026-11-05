@@ -143,7 +143,7 @@ dialog p{margin:0 0 16px}
 <div class="wrap">
   <header>
     <h1>따붕</h1>
-    <p>따라오는 붕어. 수조 안에서 빨간 별을 움직이면 금붕어가 쫓아옵니다. 원작 Desmos 그래프의 수식을 그대로 옮겨 만들었습니다.</p>
+    <p>따라오는 붕어. 수조 안에서 빨간 별을 움직이면 금붕어가 쫓아옵니다. 원작 Desmos 그래프의 수식을 옮겨 만들었습니다.</p>
     <div class="head-actions"><button id="makeFish">나만의 붕어 만들기</button><button id="browseFish">친구들의 붕어 구경하기</button></div>
   </header>
 
@@ -155,7 +155,7 @@ dialog p{margin:0 0 16px}
       <label>주둥이 길이 <button type="button" class="info-btn" data-info="snout" aria-label="주둥이 길이 함수 설명">i</button><input data-part="snout" type="range" min="0" max="0.8" step="0.05" value="0.35"><output>0.35</output></label>
       <label>주둥이 뭉툭함 <button type="button" class="info-btn" data-info="mouth" aria-label="주둥이 함수 설명">i</button><input data-part="mouth" type="range" min="0.35" max="0.8" step="0.05" value="0.54"><output>0.54</output></label>
       <label>몸통 길이 <button type="button" class="info-btn" data-info="length" aria-label="몸통 길이 함수 설명">i</button><input data-part="length" type="range" min="1.5" max="2.8" step="0.05" value="2.4"><output>2.40</output></label>
-      <label>몸통 통통함 <button type="button" class="info-btn" data-info="body" aria-label="몸통 함수 설명">i</button><input data-part="body" type="range" min="0.6" max="1.25" step="0.05" value="0.9"><output>0.90</output></label>
+      <label>몸통 두께 <button type="button" class="info-btn" data-info="body" aria-label="몸통 함수 설명">i</button><input data-part="body" type="range" min="0.6" max="1.25" step="0.05" value="0.9"><output>0.90</output></label>
       <label>비늘 크기 <button type="button" class="info-btn" data-info="scaleSize" aria-label="비늘 함수 설명">i</button><input data-part="scaleSize" type="range" min="0.7" max="1.3" step="0.05" value="1"><output>1.00</output></label>
       <label>꼬리 크기 <button type="button" class="info-btn" data-info="tail" aria-label="꼬리 함수 설명">i</button><input data-part="tail" type="range" min="0.45" max="1.2" step="0.05" value="1"><output>1.00</output></label>
       <label>꼬리 주름 수 <button type="button" class="info-btn" data-info="folds" aria-label="꼬리 주름 함수 설명">i</button><input data-part="folds" type="range" min="0" max="8" step="1" value="3"><output>3</output></label>
@@ -390,7 +390,7 @@ const infoText={
  eyeX:()=>`눈 중심의 x좌표 = ${design.eyeX}\n허용 범위 [0.2, 1.2], 눈은 몸통 좌표계에서 회전변환됩니다.\n전체 수조 표시 범위 x [−27, 27]`,
  eyeY:()=>`눈 중심의 y좌표 = ${design.eyeY}\n허용 범위 [−0.45, 0.55], 눈은 몸통 좌표계에서 회전변환됩니다.\n전체 수조 표시 범위 y [−10, 17.6]`
 };
-function showInfo(key){activeInfo=key;const box=document.getElementById('controlInfo');box.hidden=false;box.innerHTML=`<h3><small>함수 설명</small>${({snout:'주둥이 길이',mouth:'주둥이 뭉툭함',length:'몸통 길이',body:'몸통 통통함',scaleSize:'비늘 크기',tail:'꼬리 크기',folds:'꼬리 주름 수',eyeX:'눈 x좌표',eyeY:'눈 y좌표'})[key]}</h3><p>슬라이더를 움직이면 해당 함수의 계수와 렌더링 범위가 함께 바뀝니다.</p><pre>${infoText[key]()}</pre>`}
+function showInfo(key){activeInfo=key;const box=document.getElementById('controlInfo');box.hidden=false;box.innerHTML=`<h3><small>함수 설명</small>${({snout:'주둥이 길이',mouth:'주둥이 뭉툭함',length:'몸통 길이',body:'몸통 두께',scaleSize:'비늘 크기',tail:'꼬리 크기',folds:'꼬리 주름 수',eyeX:'눈 x좌표',eyeY:'눈 y좌표'})[key]}</h3><p>슬라이더를 움직이면 해당 함수의 계수와 렌더링 범위가 함께 바뀝니다.</p><pre>${infoText[key]()}</pre>`}
 document.querySelectorAll('[data-info]').forEach(b=>b.onclick=()=>showInfo(b.dataset.info));
 document.getElementById('saveFish').onclick=()=>{document.getElementById('saveMessage').hidden=true;document.getElementById('saveDialog').showModal()};
 document.getElementById('saveCancel').onclick=()=>document.getElementById('saveDialog').close();
