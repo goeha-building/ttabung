@@ -58,7 +58,7 @@ function validateFish(input) {
   const ranges = {
     snout: [0, 0.8, 0.35], mouth: [0.35, 0.8, 0.54], length: [1.5, 2.8, 2.4],
     body: [0.6, 1.25, 0.9], tail: [0.45, 1.2, 1], folds: [0, 8, 3], foldLength: [0.1, 0.55, 0.2],
-    eyeX: [0.2, 1.2, 1], eyeY: [-0.45, 0.55, 0.03], scaleSize: [0.7, 1.3, 1],
+    eyeX: [0.2, 1.2, 1], eyeY: [-0.45, 0.55, 0.03], scaleSize: [0.7, 1.3, 1], gillX: [0.2, 0.8, 0.6],
   };
   const design = {};
   for (const [key, [min, max, fallback]] of Object.entries(ranges)) {
@@ -66,7 +66,7 @@ function validateFish(input) {
     if (!Number.isFinite(value) || value < min || value > max) return null;
     design[key] = key === "folds" ? Math.round(value) : value;
   }
-  const eyeStyles = new Set(["circle", "star", "line", "x", "square", "angry"]);
+  const eyeStyles = new Set(["circle", "star", "line", "x", "caret", "square", "angry"]);
   design.eyeStyle = eyeStyles.has(input.eyeStyle) ? input.eyeStyle : "circle";
   return { ...design, name, owner, introduction };
 }
