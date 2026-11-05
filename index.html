@@ -251,7 +251,7 @@ let yg2=rng(-.15,.15,.03);gill(yg2,y=>3*(y-.01)**2);
 gill(rng(-.45,-.15,.03),y=>3*(y+.3)**2);
 gill(rng(0,.3,.03),y=>-.3+3*(y-.15)**2);
 gill(rng(-.3,0,.03),y=>-.3+3*(y+.15)**2);
-const originalGillIndex=P.length;let yg6=rng(-.35,.35,.025);add(yg6.map(y=>.6+2.5*(y-.01)**2),yg6);
+const originalGillIndex=P.length;add(yg2.map(y=>.6+2.5*(y-.01)**2),yg2);
 let xt=rng(-1.9,-1.2,.05);add(xt,xt.map(x=>1.17-.8*(x+2.1)**2));add(xt,xt.map(x=>-1.17+.8*(x+2.1)**2));
 let xs3=[-1.5,-1.4,-1.3];add(xs3,xs3.map(x=>x+1.1));add(xs3,xs3.map(x=>-x-1.1));add(xs3,xs3.map(()=>0));
 let yc1=rng(0,1.092,.05);add(yc1.map(y=>-1.9-.4*(.546**2-(y-.546)**2)),yc1);
@@ -264,7 +264,7 @@ let design={...defaultFish},adopted=null,editorSaved=false,viewZoom=1,viewPanX=0
 function fishPaths(f){
   if(f.snout===.35&&f.mouth===.54&&f.length===2.4&&f.body===.9&&f.tail===1&&f.folds===3&&(f.foldLength===undefined||f.foldLength===.2)&&(f.scaleSize===undefined||f.scaleSize===1)){
     const paths=originalP.map(p=>p.map(q=>q.slice())),gillX=f.gillX??.6;
-    if(gillX!==.6){const ys=rng(-.35,.35,.025);paths[originalGillIndex]=ys.map(y=>[gillX+2.5*(y-.01)**2,y])}
+    if(gillX!==.6){const ys=rng(-.15,.15,.03);paths[originalGillIndex]=ys.map(y=>[gillX+2.5*(y-.01)**2,y])}
     return paths;
   }
   const paths=[],put=(xs,ys)=>paths.push(xs.map((x,i)=>[x,ys[i]]).filter(p=>Number.isFinite(p[1])));
@@ -288,7 +288,7 @@ function fishPaths(f){
     }
   }
   const sx=f.length/2.4*(f.scaleSize||1),sy=Math.min(1,f.body/.9)*(f.scaleSize||1);
-  const gillYs=rng(-.35,.35,.025);put(gillYs.map(y=>(f.gillX??.6)+2.5*(y-.01)**2),gillYs);
+  const gillYs=rng(-.15,.15,.03);put(gillYs.map(y=>(f.gillX??.6)+2.5*(y-.01)**2),gillYs);
   const scales=[[-.45,-.15,y=>3*(y+.3)**2],[-.15,.15,y=>3*(y-.01)**2],[.15,.45,y=>3*(y-.3)**2],[0,.3,y=>-.3+3*(y-.15)**2],[-.3,0,y=>-.3+3*(y+.15)**2]];
   for(const [lo,hi,fx] of scales){const ys0=rng(lo,hi,.03);put(ys0.map(y=>fx(y)*sx),ys0.map(y=>y*sy))}
   return paths;
@@ -376,7 +376,7 @@ function renderEditor(){makeGeometry(design);document.querySelectorAll('#editor 
  g.save();g.beginPath();g.rect(0,0,w,h);g.clip();g.strokeStyle=C.guide;g.globalAlpha=.35;g.lineWidth=1;for(let x=-27;x<=27;x+=5){g.beginPath();g.moveTo(px(x),py(17.6));g.lineTo(px(x),py(-10));g.stroke()}for(let y=-10;y<=17;y+=5){g.beginPath();g.moveTo(px(-27),py(y));g.lineTo(px(27),py(y));g.stroke()}g.globalAlpha=.8;g.lineWidth=1.5;g.beginPath();g.moveTo(px(0),py(17.6));g.lineTo(px(0),py(-10));g.moveTo(px(-27),py(0));g.lineTo(px(27),py(0));g.stroke();g.fillStyle=C.ink;g.font='13px "JetBrains Mono",monospace';g.textAlign='center';for(let x=-25;x<=25;x+=5)g.fillText(String(x),px(x),py(-9.1));g.textAlign='left';for(let y=-10;y<=15;y+=5)g.fillText(String(y),px(-26.5),py(y)-3);g.restore();
  g.save();g.beginPath();g.rect(0,0,w,h);g.clip();g.strokeStyle=C.fish;g.lineWidth=Math.max(2,.09*S*unit);g.lineJoin='round';g.lineCap='round';for(const p of P){g.beginPath();p.forEach(([x,y],i)=>i?g.lineTo(px(x*S),py(y*S)):g.moveTo(px(x*S),py(y*S)));g.stroke()}drawEye(g,px(design.eyeX*S),py(design.eyeY*S),Math.max(3,.1*S*unit),design.eyeStyle);g.restore();
  const back=-design.length/2,mid=(1.2+back)/2,radius=(1.2-back)/2;
- document.getElementById('fishFormula').innerHTML=`<h3><small>현재 함수</small>따붕그래프</h3><p><b>몸통</b>은 가운데 높이와 양 끝 높이를 이차함수로 연결하고, <b>주둥이</b>는 양 끝이 몸통에 닿도록 이어집니다.</p><pre>몸통  y = ±[${design.mouth} + (${design.body}−${design.mouth})(1−((x−${mid.toFixed(2)})/${radius.toFixed(2)})²)]\n주둥이  x = 1.2 + ${design.snout}(1−(y/${design.mouth})²)\n아가미  x = ${design.gillX} + 2.5(y−0.01)²,  y ∈ [−0.35, 0.35]\n꼬리 폭 계수  ${design.tail} · 주름 수 ${design.folds} · 주름 길이 ${design.foldLength}\n눈 중심  (${design.eyeX}, ${design.eyeY})</pre><p>몸통 x 범위 [−${(design.length/2).toFixed(2)}, 1.2], 세로 범위 약 [−${design.body}, ${design.body}] · 수조 좌표 x [−27,27], y [−10,17.6]</p>`;
+ document.getElementById('fishFormula').innerHTML=`<h3><small>현재 함수</small>따붕그래프</h3><p><b>몸통</b>은 가운데 높이와 양 끝 높이를 이차함수로 연결하고, <b>주둥이</b>는 양 끝이 몸통에 닿도록 이어집니다.</p><pre>몸통  y = ±[${design.mouth} + (${design.body}−${design.mouth})(1−((x−${mid.toFixed(2)})/${radius.toFixed(2)})²)]\n주둥이  x = 1.2 + ${design.snout}(1−(y/${design.mouth})²)\n아가미  x = ${design.gillX} + 2.5(y−0.01)²,  y ∈ [−0.15, 0.15]\n꼬리 폭 계수  ${design.tail} · 주름 수 ${design.folds} · 주름 길이 ${design.foldLength}\n눈 중심  (${design.eyeX}, ${design.eyeY})</pre><p>몸통 x 범위 [−${(design.length/2).toFixed(2)}, 1.2], 세로 범위 약 [−${design.body}, ${design.body}] · 수조 좌표 x [−27,27], y [−10,17.6]</p>`;
  if(activeInfo)showInfo(activeInfo);
 }
 function restoreApplied(){design=normalizeFish(adopted||defaultFish);makeGeometry(design);updateNameButton()}
@@ -401,7 +401,7 @@ const infoText={
  tail:()=>`꼬리 곡선과 끝마감\ny_top = 1.17 − 0.8(x+2.1)² 를 꼬리 크기 ${design.tail}에 맞춰 변형\nx_cap = b − 0.4·${design.tail}(0.546² − (1.092y/T−0.546)²),  T = ${(design.mouth+.616*design.tail).toFixed(3)}\n꼬리 뿌리 x = −${(design.length/2).toFixed(2)}, 끝 x = −${(design.length/2+.7*design.tail).toFixed(2)}\n몸통과 꼬리 곡선은 뿌리에서 같은 좌표로 연결됩니다.`,
  folds:()=>`꼬리 주름 수 = ${design.folds}\n주름은 뿌리에서 꼬리 안쪽으로 잇는 일차함수입니다. 위쪽은 음의 기울기, 아래쪽은 양의 기울기이며 x축 주름은 y = 0인 수평선입니다.\n꼬리 주름 길이 ${design.foldLength}에 따라 x·y 렌더링 범위가 함께 바뀝니다.`,
  foldLength:()=>{const len=Math.min(design.foldLength,Math.max(.05,.7*design.tail*.72-.1)),start=-design.length/2-.1,end=start-len,maxRise=.616*design.tail*.72*.58*(len/.3);return `꼬리 주름은 y = y₀ + m(x−x₀)인 일차함수입니다.\n길이 계수 L = ${design.foldLength} (허용 범위 0.10~0.55), 꼬리 안쪽 실제 길이 = ${len.toFixed(3)}\nx 시작점 x₀ = ${start.toFixed(2)}, 끝점 x₁ = ${end.toFixed(2)}\n가장 바깥 주름의 세로 변화량은 약 ±${maxRise.toFixed(3)}이며, 길이에 비례해 치역도 조절됩니다.\n꼬리 경계 안쪽에서만 렌더링합니다.`},
- gillX:()=>`아가미 이차함수\nx = ${design.gillX} + 2.5(y−0.01)²,  y ∈ [−0.35, 0.35]\n꼭짓점 x좌표 ${design.gillX} (허용 범위 0.2~0.8)만 이동하며, 곡률과 y범위는 유지됩니다.`,
+ gillX:()=>`아가미 이차함수\nx = ${design.gillX} + 2.5(y−0.01)²,  y = y_g2 ∈ [−0.15, 0.15]\n꼭짓점 x좌표 ${design.gillX} (허용 범위 0.2~0.8)만 이동하며, 곡률과 치역은 유지됩니다.`,
  eyeX:()=>`눈 중심의 x좌표 = ${design.eyeX}\n허용 범위 [0.2, 1.2], 눈은 몸통 좌표계에서 회전변환됩니다.\n전체 수조 표시 범위 x [−27, 27]`,
  eyeY:()=>`눈 중심의 y좌표 = ${design.eyeY}\n허용 범위 [−0.45, 0.55], 눈은 몸통 좌표계에서 회전변환됩니다.\n전체 수조 표시 범위 y [−10, 17.6]`
 };
@@ -426,7 +426,7 @@ function graphCards(f){const length=Number(f.length)||2.4,body=Number(f.body)||.
   ['몸통 위쪽','원점을 중심으로 한 포물선의 꼭짓점 높이와 x범위로 몸통을 조절합니다.',`y = ${mouth} + (${body}−${mouth})(1−((x−${mid.toFixed(2)})/${half.toFixed(2)})²)`,`x ∈ [${back.toFixed(2)}, 1.2]`],
   ['몸통 아래쪽','위쪽 몸통을 x축에 대칭이동한 그래프입니다.',`y = −[${mouth} + (${body}−${mouth})(1−((x−${mid.toFixed(2)})/${half.toFixed(2)})²)]`,`x ∈ [${back.toFixed(2)}, 1.2]`],
   ['주둥이',`입 끝이 몸통 끝점에 붙도록 y=±${mouth}에서 x=1.2가 됩니다.`,`x = 1.2 + ${snout}(1−(y/${mouth})²)`,`y ∈ [−${mouth}, ${mouth}]`],
-  ['아가미','아가미 이차함수의 x 위치를 옮깁니다. 곡률과 치역은 그대로입니다.',`x = ${gillX} + 2.5(y−0.01)²`,`y ∈ [−0.35, 0.35]`],
+  ['아가미','원래 아가미 함수 x_g6 = 0.6 + 2.5(y_g2−0.01)²의 x 위치만 옮깁니다.',`x = ${gillX} + 2.5(y_g2−0.01)²`,`y_g2 ∈ [−0.15, 0.15]`],
   ['비늘 곡선 1','몸통 안쪽의 이차함수 곡선입니다.',`x = ${scaleSize}·3(y/${scaleSize}+0.3)²`,`y ∈ [${(-.45*scaleSize).toFixed(2)}, ${(-.15*scaleSize).toFixed(2)}]`],
   ['비늘 곡선 2','몸통 안쪽의 이차함수 곡선입니다.',`x = ${scaleSize}·3(y/${scaleSize}−0.01)²`,`y ∈ [${(-.15*scaleSize).toFixed(2)}, ${( .15*scaleSize).toFixed(2)}]`],
   ['비늘 곡선 3','몸통 안쪽의 이차함수 곡선입니다.',`x = ${scaleSize}·3(y/${scaleSize}−0.3)²`,`y ∈ [${(.15*scaleSize).toFixed(2)}, ${(.45*scaleSize).toFixed(2)}]`],
