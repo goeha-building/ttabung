@@ -78,16 +78,15 @@ function validateFish(input) {
   }
   const eyeStyles = new Set(["circle", "star", "line", "x", "caret", "square", "angry"]);
   design.eyeStyle = eyeStyles.has(input.eyeStyle) ? input.eyeStyle : "circle";
-  design.facing = input.facing === "left" ? "left" : "right";
-
+  design.facing = "right";
   const graphTypes = new Set(["point", "line", "quadratic", "rational"]);
   const customGraphs = Array.isArray(input.customGraphs) ? input.customGraphs : [];
   if (customGraphs.length > 40) return null;
   design.customGraphs = [];
   for (const graph of customGraphs) {
     if (!graph || typeof graph !== "object" || !graphTypes.has(graph.type)) return null;
-    const equation = typeof graph.equation === "string" ? graph.equation.trim().slice(0, 160) : "";
-    if (!equation || !/^[xyXY0-9+\-*/^().,=\s]+$/.test(equation)) return null;
+    const equation = typeof graph.equation === "string" ? graph.equation.trim() : "";
+    if (!equation || equation.length > 160 || !/^[xyXY0-9+\-*/^().,=\s]+$/.test(equation)) return null;
     const clean = { id: typeof graph.id === "string" ? graph.id.slice(0, 40) : crypto.randomUUID(), type: graph.type, equation };
     if (graph.type === "point") {
       const point = equation.match(/^\s*([+-]?(?:\d+(?:\.\d*)?|\.\d+))\s*,\s*([+-]?(?:\d+(?:\.\d*)?|\.\d+))\s*$/);
@@ -100,6 +99,8 @@ function validateFish(input) {
     }
     design.customGraphs.push(clean);
   }
+  design.customOnly = input.customOnly === true;
+  if (design.customOnly && !design.customGraphs.length) return null;
   return { ...design, name, owner, introduction };
 }
 
