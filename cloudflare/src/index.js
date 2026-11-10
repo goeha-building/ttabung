@@ -99,7 +99,7 @@ function validateFish(input) {
     }
     design.customGraphs.push(clean);
   }
-  design.customOnly = input.customOnly === true;
+  design.customOnly = input.customOnly === true || design.customGraphs.length > 0;
   if (design.customOnly && !design.customGraphs.length) return null;
   return { ...design, name, owner, introduction };
 }
